@@ -8,39 +8,33 @@ One of them is building help files for several cultures.
 
 ## Quick Start
 
-** Step 1. ** Download and unzip Helps to one of the PowerShell module
+**Step 1:** Download and unzip Helps to one of the PowerShell module
 directories. See $env:PSModulePath:
 
-> PS> $env:PSModulePath
-> C:\Users\...\Documents\WindowsPowerShell\Modules;...
+> $env:PSModulePath
+> - C:\Users\...\Documents\WindowsPowerShell\Modules;...
 
-** Step 2. ** Choose the command, for example My-Command cmdlet from MyModule,
+**Step 2:** Choose the command, for example My-Command cmdlet from MyModule,
 and make the command available, that is load the module (dot-source scripts for
 functions):
 
-> PS> Import-Module MyModule
+> Import-Module MyModule
 
-** Step 3. ** Import the Helps module:
+**Step 3:** Import the Helps module:
 
-> PS> Import-Module Helps
+> Import-Module Helps
 
-** Step 4. ** Create and save the template help script of My-Command, open the
+**Step 4:** Create and save the template help script of My-Command, open the
 script in an editor and modify it, at least the synopsis should not be empty:
 
-> PS> New-Helps -Command My-Command > MyModule.dll-Help.ps1
+> New-Helps -Command My-Command > MyModule.dll-Help.ps1
 
-** Step 5. ** Build the PowerShell help Module.dll-Help.xml from
+**Step 5:** Build the PowerShell help Module.dll-Help.xml from
 MyModule.dll-Help.ps1 and ensure the result is in the module directory:
 
-> PS> Convert-Helps MyModule.dll-Help.ps1 MyModule.dll-Help.xml
-
-Result:
-
-> ...\Modules\MyModule\MyModule.dll
-> ...\Modules\MyModule\MyModule.dll-Help.xml
+> Convert-Helps MyModule.dll-Help.ps1 MyModule.dll-Help.xml
 
 That is it. In a new PowerShell session import the module and get the command
 help:
 
-> PS> Import-Module MyModule
-> PS> Get-Help My-Command
+> Get-Help My-Command

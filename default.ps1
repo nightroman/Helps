@@ -61,7 +61,6 @@ task zip -description 'Make the public archive' {
 		'Helps.psm1'
 		'History.txt'
 		'License.txt'
-		'QuickStart.txt'
 	)
 	Copy-Item -Destination z\Helps\Demo @(
 		'Demo\Helps-Help.ps1'
