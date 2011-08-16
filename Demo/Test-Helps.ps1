@@ -100,5 +100,5 @@ if ($toCopy) {
 	Move-Item Test-Helps-Help.log Test-Helps-Help.txt -Force
 }
 
-### remove MAML files, se the result help in Test-Helps-Help.txt
+### remove XML files, see the result help in Test-Helps-Help.txt
 Remove-Item Test-Helps-Help.xml, TestProvider.dll-Help.xml

@@ -4,7 +4,7 @@
 The module builds PowerShell MAML help files from PowerShell help scripts.
 Help scripts are almost WYSIWYG, they look very similar to the result help.
 Still, they are just scripts and this makes a lot of useful features easy.
-One of them is building PowerShell localized help files.
+One of them is building localized help files.
 
 ## Quick Start
 
@@ -42,6 +42,6 @@ help:
 
 ## See Also
 
-* [Command Help Script] (https://github.com/nightroman/Helps/wiki/Command-Help-Script)
-* [Provider Help Script] (https://github.com/nightroman/Helps/wiki/Provider-Help-Script)
-* [Localized Help Script] (https://github.com/nightroman/Helps/wiki/Localized-Help-Script)
+* [Command Help Script](https://github.com/nightroman/Helps/wiki/Command-Help-Script)
+* [Provider Help Script](https://github.com/nightroman/Helps/wiki/Provider-Help-Script)
+* [Localized Help Script](https://github.com/nightroman/Helps/wiki/Localized-Help-Script)
