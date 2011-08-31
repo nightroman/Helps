@@ -1,37 +1,42 @@
 
-# psake build script.
+<#
+.Synopsis
+	Invoke-Build script (https://github.com/nightroman/Invoke-Build)
+#>
 
-properties {
+param
+(
 	$Culture = 'en-US'
-}
+)
 
-task default -depends help-en-US, help-ru-RU, test
+task . help-en-US, help-ru-RU, test
 
-task test -description 'Calls Demo\Test-Helps.ps1' {
-	Push-Location Demo
+# Calls Demo\Test-Helps.ps1
+task test {
+	Set-Location Demo
 	.\Test-Helps.ps1
-	Pop-Location
 }
 
-task help-en-US -description 'Builds/tests en-US help' {
+# Builds/tests en-US help
+task help-en-US {
 	Import-Module Helps
 	Convert-Helps Demo\Helps-Help.ps1 .\en-US\Helps-Help.xml @{ UICulture = 'en-US' }
 
-	Push-Location Demo
+	Set-Location Demo
 	Test-Helps Helps-Help.ps1
-	Pop-Location
 }
 
-task help-ru-RU -description 'Builds/tests ru-RU help' {
+# Builds/tests ru-RU help
+task help-ru-RU {
 	Import-Module Helps
 	Convert-Helps Demo\Helps-Help.ps1 .\ru-RU\Helps-Help.xml @{ UICulture = 'ru-RU' }
 
-	Push-Location Demo
+	Set-Location Demo
 	Test-Helps Helps-Help.ps1
-	Pop-Location
 }
 
-task view -description 'View help using the $Culture' {
+# View help using the $Culture
+task view {
 	[System.Threading.Thread]::CurrentThread.CurrentUICulture = $Culture
 	Import-Module Helps
 	@(
@@ -47,7 +52,8 @@ task view -description 'View help using the $Culture' {
 	notepad \temp\help.txt
 }
 
-task zip -description 'Make the public archive' {
+# Make the public archive
+task zip {
 	$Version = &{ Import-LocalizedData -FileName Helps -BindingVariable _; $_.ModuleVersion }
 
 	Remove-Item [z] -Force -Recurse
@@ -74,7 +80,7 @@ task zip -description 'Make the public archive' {
 	Copy-Item -Destination z\Helps\en-US en-US\*
 	Copy-Item -Destination z\Helps\ru-RU ru-RU\*
 
-	Exec {
+	exec {
 		Push-Location z
 		& 7z a "..\Helps.$Version.zip" .\*
 		Pop-Location
