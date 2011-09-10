@@ -17,9 +17,9 @@
 #>
 
 @{
-	ModuleVersion = '1.0.1'
-	CompanyName = 'http://code.google.com/p/helps-powershell-help-builder/'
-	Description = 'Helps module - PowerShell help builder '
+	ModuleVersion = '1.0.2'
+	CompanyName = 'https://github.com/nightroman/Helps'
+	Description = 'Helps module - PowerShell help builder'
 	Copyright = '(C) 2011 Roman Kuzmin. All rights reserved.'
 	Author = 'Roman Kuzmin'
 

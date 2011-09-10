@@ -8,11 +8,10 @@ One of them is building localized help files.
 
 ## Quick Start
 
-**Step 1:** Download and unzip Helps to one of the PowerShell module
-directories. See `$env:PSModulePath`:
+**Step 1:** Download and unzip *Helps* to one of the PowerShell module
+directories (see `$env:PSModulePath`). For example:
 
-    PS> $env:PSModulePath
-    C:\Users\...\Documents\WindowsPowerShell\Modules;...
+    C:/Users/.../Documents/WindowsPowerShell/Modules/Helps
 
 **Step 2:** Choose the command, for example *My-Command* cmdlet from *MyModule*,
 and make the command available, that is load the module (or dot-source scripts
@@ -20,7 +19,7 @@ for functions):
 
     PS> Import-Module MyModule
 
-**Step 3:** Import the Helps module:
+**Step 3:** Import the *Helps* module:
 
     PS> Import-Module Helps
 

@@ -12,6 +12,9 @@
 	* TestProvider.dll is created for the dummy TestProvider being tested.
 #>
 
+Set-StrictMode -Version 2
+$ErrorActionPreference = 'Stop'
+
 if (!(Test-Path Test-Helps.ps1)) { throw 'Run me from my location.' }
 
 # load the module

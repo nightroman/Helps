@@ -102,50 +102,51 @@ function Test-Helps
 	[hashtable]$Parameters = @{}
 )
 {
-	Set-StrictMode -Version 2
-	$ErrorActionPreference = 'Stop'
+	${private:-script} = $Script
+	${private:-parameters} = $Parameters
+	Remove-Variable Script, Parameters
 
-	foreach($help in (Import-Helps $Script $Parameters)) {
-		$name = $help['command']
-		if ($name) {
-			$examples = @($help['examples'])
+	foreach(${private:-help} in (Import-Helps ${private:-script} ${private:-parameters})) {
+		${private:-name} = ${private:-help}['command']
+		if (${private:-name}) {
+			${private:-examples} = @(${private:-help}['examples'])
 		}
 		else {
-			$name = $help['provider']
-			if (!$name) {
-				throw "Invalid help entry: experted 'command' or 'provider'."
+			${private:-name} = ${private:-help}['provider']
+			if (!${private:-name}) {
+				throw "Invalid help entry: expected 'command' or 'provider'."
 			}
-			$examples = @()
-			$tasks = @($help['tasks'])
-			foreach($task in $tasks) {
-				$more = @($task['examples'])
-				if ($more) {
-					$examples += $more
+			${private:-examples} = @()
+			${private:-tasks} = @(${private:-help}['tasks'])
+			foreach(${private:-task} in ${private:-tasks}) {
+				${private:-more} = @(${private:-task}['examples'])
+				if (${private:-more}) {
+					${private:-examples} += ${private:-more}
 				}
 			}
 		}
-		if (!$examples) {
+		if (!${private:-examples}) {
 			continue
 		}
 
-		$number = 0
-		foreach($example in $examples) {
-			++$number
-			$test = $example['test']
-			if ($test) {
-				if ($test -isnot [scriptblock]) {
-					throw "$name : example $number : 'test' is not a script block."
+		${private:-number} = 0
+		foreach(${private:-example} in ${private:-examples}) {
+			++${private:-number}
+			${private:-test} = ${private:-example}['test']
+			if (${private:-test}) {
+				if (${private:-test} -isnot [scriptblock]) {
+					throw "${private:-name} : example ${private:-number} : 'test' is not a script block."
 				}
 
-				$code = $example['code']
-				if ($code -isnot [scriptblock]) {
-					throw "$name : example $number : 'code' is not a script block."
+				${private:-code} = ${private:-example}['code']
+				if (${private:-code} -isnot [scriptblock]) {
+					throw "${private:-name} : example ${private:-number} : 'code' is not a script block."
 				}
 
 				'#'*77
-				$code
-				$test
-				& $test $code
+				${private:-code}
+				${private:-test}
+				& ${private:-test} ${private:-code}
 			}
 		}
 	}

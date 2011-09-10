@@ -1,7 +1,7 @@
 
 <#
 .Synopsis
-	Invoke-Build script (https://github.com/nightroman/Invoke-Build)
+	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
 param
@@ -9,16 +9,17 @@ param
 	$Culture = 'en-US'
 )
 
-task . help-en-US, help-ru-RU, test
+# Build the module help, run tests.
+task . HelpEn, HelpRu, Test
 
 # Calls Demo\Test-Helps.ps1
-task test {
+task Test {
 	Set-Location Demo
 	.\Test-Helps.ps1
 }
 
-# Builds/tests en-US help
-task help-en-US {
+# Build and test en-US help
+task HelpEn {
 	Import-Module Helps
 	Convert-Helps Demo\Helps-Help.ps1 .\en-US\Helps-Help.xml @{ UICulture = 'en-US' }
 
@@ -26,8 +27,8 @@ task help-en-US {
 	Test-Helps Helps-Help.ps1
 }
 
-# Builds/tests ru-RU help
-task help-ru-RU {
+# Build and test ru-RU help
+task HelpRu {
 	Import-Module Helps
 	Convert-Helps Demo\Helps-Help.ps1 .\ru-RU\Helps-Help.xml @{ UICulture = 'ru-RU' }
 
@@ -36,7 +37,7 @@ task help-ru-RU {
 }
 
 # View help using the $Culture
-task view {
+task View {
 	[System.Threading.Thread]::CurrentThread.CurrentUICulture = $Culture
 	Import-Module Helps
 	@(
@@ -52,8 +53,15 @@ task view {
 	notepad \temp\help.txt
 }
 
+task ConvertMarkdown `
+-Inputs { Get-ChildItem -Filter *.md } `
+-Outputs {process{ [System.IO.Path]::ChangeExtension($_, 'htm') }} `
+{process{
+	Convert-Markdown.ps1 $_ $$
+}}
+
 # Make the public archive
-task zip {
+task Zip ConvertMarkdown, {
 	$Version = &{ Import-LocalizedData -FileName Helps -BindingVariable _; $_.ModuleVersion }
 
 	Remove-Item [z] -Force -Recurse
@@ -65,8 +73,9 @@ task zip {
 		'ConvertTo-MamlProvider.ps1'
 		'Helps.psd1'
 		'Helps.psm1'
-		'History.txt'
 		'License.txt'
+		'README.htm'
+		'Release Notes.htm'
 	)
 	Copy-Item -Destination z\Helps\Demo @(
 		'Demo\Helps-Help.ps1'
@@ -87,4 +96,5 @@ task zip {
 	}
 
 	Remove-Item z -Force -Recurse
+	Remove-Item *.htm
 }
