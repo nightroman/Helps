@@ -132,12 +132,16 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 		"<maml:name>$script:Name</maml:name>"
 		$set.Parameters | Sort-Object $sortParameterInSyntax | .{process{ if ($script:CommonParameters -notcontains $_.Name) {
 			$start = '<command:parameter '
+
+			# required, position, pipelineInput is not needed
 			if ($_.IsMandatory) { $start += 'required="true" ' } else { $start += 'required="false" ' }
 			if ($_.Position -ge 0) { $start += 'position="' + ($_.Position + 1) + '" ' } else { $start += 'position="named" ' }
+
 			$start += '>'
 			$start
+
 			"<maml:name>$($_.Name)</maml:name>"
-			if ($_.ParameterType -ne [System.Management.Automation.SwitchParameter]) { #??? variableLength="false"
+			if ($_.ParameterType -ne [System.Management.Automation.SwitchParameter]) {
 				@"
 <command:parameterValue required="true">$($_.ParameterType.Name)</command:parameterValue>
 "@
@@ -164,10 +168,27 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 	Get-CommandParameter $script:Command { if ($_.Position -ge 0) { $_.Position } else { 999 } }, Name | .{process{
 		$start = '<command:parameter '
+
+		# required
 		if ($_.IsMandatory) { $start += 'required="true" ' } else { $start += 'required="false" ' }
+
+		# pipelineInput
+		if ($_.ValueFromPipeline -and $_.ValueFromPipelineByPropertyName) {
+			$start += 'pipelineInput="true (ByValue, ByPropertyName)" '
+		}
+		elseif ($_.ValueFromPipelineByPropertyName) {
+			$start += 'pipelineInput="true (ByPropertyName)" '
+		}
+		elseif ($_.ValueFromPipeline) {
+			$start += 'pipelineInput="true (ByValue)" '
+		}
+
+		# position
 		if ($_.Position -ge 0) { $start += 'position="' + ($_.Position + 1) + '" ' } else { $start += 'position="named" ' }
+
 		$start += '>'
 		$start
+
 		"<maml:name>$($_.Name)</maml:name>"
 
 		$parameterDescription = @($parameters[$_.Name])
