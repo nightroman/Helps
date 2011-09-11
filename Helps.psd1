@@ -17,7 +17,7 @@
 #>
 
 @{
-	ModuleVersion = '1.0.2'
+	ModuleVersion = '1.0.3'
 	CompanyName = 'https://github.com/nightroman/Helps'
 	Description = 'Helps module - PowerShell help builder'
 	Copyright = '(C) 2011 Roman Kuzmin. All rights reserved.'
