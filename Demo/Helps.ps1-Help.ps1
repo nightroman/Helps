@@ -1,10 +1,10 @@
 
 <#
 .Synopsis
-	Help source script for building this Helps module help.
+	Help script for Helps.sp1 and its functions.
 
 .Description
-	This help source script is used in order to build help for Helps.
+	This help script is used in order to build help for Helps.ps1.
 
 	It is localized, the same source is used in order to create help for
 	en-US and ru-RU cultures.
@@ -19,8 +19,8 @@
 	* TestProvider.dll-Help.ps1 - provider help script
 
 .Example
-	Import-Module Helps
-	Convert-Helps Helps-Help.ps1 Helps-Help.xml @{ UICulture = 'ru-RU' }
+	. Helps.ps1
+	Convert-Helps Helps.ps1-Help.ps1 Helps.ps1-Help.xml @{ UICulture = 'ru-RU' }
 #>
 
 param
@@ -50,6 +50,22 @@ $BaseHelp = Merge-Helps $AnyHelp @{
 	outputs = @()
 }
 
+### Helps.ps1 command help
+@{
+	command = 'Helps.ps1'
+	synopsis = $data.Helpsps1Synopsis
+	description = $data.Helpsps1Description
+	parameters = @{}
+	inputs = @()
+	outputs = @()
+	links = @(
+		@{ text = 'Convert-Helps' }
+		@{ text = 'Merge-Helps' }
+		@{ text = 'New-Helps' }
+		@{ text = 'Test-Helps' }
+	)
+}
+
 ### Convert-Helps command (inherits base help)
 
 Merge-Helps $BaseHelp @{
@@ -62,8 +78,8 @@ Merge-Helps $BaseHelp @{
 		@{
 			remarks = $data.ConvertHelpsExampleRemarks
 			code = {
-				Import-Module Helps
-				Convert-Helps Helps-Help.ps1 temp.xml
+				. Helps.ps1
+				Convert-Helps Helps.ps1-Help.ps1 temp.xml
 			}
 			test = {
 				. $args[0]
@@ -127,7 +143,7 @@ Merge-Helps $AnyHelp @{
 		@{
 			remarks = $data.NewHelpsExamplesRemarks
 			code = {
-				Import-Module Helps
+				. Helps.ps1
 				New-Helps -Command New-Helps -LocalizedData data > temp.ps1
 			}
 			test = {

@@ -8,38 +8,60 @@ param
 (
 	$Culture = 'en-US'
 )
+Set-StrictMode -Version 2
 
-# Build the module help, run tests.
-task . HelpEn, HelpRu, Test
+# Working script is located in the path, get its full path
+$ScriptFile = (Get-Command Helps.ps1).Definition
+$ScriptRoot = Split-Path $ScriptFile
+
+# Remove generated stuff.
+task Clean {
+	Remove-Item en-US, ru-RU -Force -Recurse
+}
+
+# Copy Helps.ps1 from its working location to the repository.
+task UpdateScript {
+	$target = Get-Item Helps.ps1 -ErrorAction 0
+	$source = Get-Item $ScriptFile
+	assert (!$target -or ($target.LastWriteTime -le $source.LastWriteTime))
+	Copy-Item $ScriptFile .
+}
 
 # Calls Demo\Test-Helps.ps1
-task Test {
+task Test UpdateScript, HelpEn, HelpRu, {
 	Set-Location Demo
 	.\Test-Helps.ps1
-}
+},
+Clean
 
 # Build and test en-US help
 task HelpEn {
-	Import-Module Helps
-	Convert-Helps Demo\Helps-Help.ps1 .\en-US\Helps-Help.xml @{ UICulture = 'en-US' }
+	$null = mkdir en-US -Force
+
+	. Helps.ps1
+	Convert-Helps Demo\Helps.ps1-Help.ps1 .\en-US\Helps.ps1-Help.xml @{ UICulture = 'en-US' }
+
+	Copy-Item .\en-US\Helps.ps1-Help.xml $ScriptRoot\Helps.ps1-Help.xml
 
 	Set-Location Demo
-	Test-Helps Helps-Help.ps1
+	Test-Helps Helps.ps1-Help.ps1
 }
 
 # Build and test ru-RU help
 task HelpRu {
-	Import-Module Helps
-	Convert-Helps Demo\Helps-Help.ps1 .\ru-RU\Helps-Help.xml @{ UICulture = 'ru-RU' }
+	$null = mkdir ru-RU -Force
+
+	. Helps.ps1
+	Convert-Helps Demo\Helps.ps1-Help.ps1 .\ru-RU\Helps.ps1-Help.xml @{ UICulture = 'ru-RU' }
 
 	Set-Location Demo
-	Test-Helps Helps-Help.ps1
+	Test-Helps Helps.ps1-Help.ps1
 }
 
 # View help using the $Culture
 task View {
 	[System.Threading.Thread]::CurrentThread.CurrentUICulture = $Culture
-	Import-Module Helps
+	. Helps.ps1
 	@(
 		'about_Helps'
 		'Convert-Helps'
@@ -53,48 +75,35 @@ task View {
 	notepad \temp\help.txt
 }
 
-task ConvertMarkdown `
--Inputs { Get-ChildItem -Filter *.md } `
--Outputs {process{ [System.IO.Path]::ChangeExtension($_, 'htm') }} `
-{process{
-	Convert-Markdown.ps1 $_ $$
-}}
+# <https://github.com/nightroman/Invoke-Build/wiki/Partial-Incremental-Tasks>
+try { Markdown.tasks.ps1 }
+catch { task ConvertMarkdown; task RemoveMarkdownHtml }
 
 # Make the public archive
-task Zip ConvertMarkdown, {
-	$Version = &{ Import-LocalizedData -FileName Helps -BindingVariable _; $_.ModuleVersion }
-
-	Remove-Item [z] -Force -Recurse
-	$null = mkdir z\Helps\Demo, z\Helps\en-US, z\Helps\ru-RU
-
-	Copy-Item -Destination z\Helps @(
-		'ConvertTo-Maml.ps1'
-		'ConvertTo-MamlCommand.ps1'
-		'ConvertTo-MamlProvider.ps1'
-		'Helps.psd1'
-		'Helps.psm1'
-		'License.txt'
-		'README.htm'
-		'Release Notes.htm'
-	)
-	Copy-Item -Destination z\Helps\Demo @(
-		'Demo\Helps-Help.ps1'
-		'Demo\Test-Helps.ps1'
-		'Demo\Test-Helps-Help.ps1'
-		'Demo\TestProvider.dll-Help.ps1'
-		'Demo\TestProvider.cs'
-	)
-	Copy-Item -Destination z\Helps\Demo\en-US Demo\en-US*
-	Copy-Item -Destination z\Helps\Demo\ru-RU Demo\ru-RU*
-	Copy-Item -Destination z\Helps\en-US en-US\*
-	Copy-Item -Destination z\Helps\ru-RU ru-RU\*
+task Zip UpdateScript, ConvertMarkdown, HelpEn, HelpRu, {
+	. Helps
+	$Version = Get-HelpsVersion
 
 	exec {
-		Push-Location z
-		& 7z a "..\Helps.$Version.zip" .\*
-		Pop-Location
+		& 7z a Helps.$Version.zip @(
+			'Helps.ps1'
+			'LICENSE.txt'
+			'README.htm'
+			'Release Notes.htm'
+			'en-US\Helps.ps1-Help.xml'
+			'ru-RU\Helps.ps1-Help.xml'
+			'Demo\Helps.ps1-Help.ps1'
+			'Demo\Test-Helps.ps1'
+			'Demo\Test-Helps-Help.ps1'
+			'Demo\TestProvider.dll-Help.ps1'
+			'Demo\TestProvider.cs'
+			'Demo\en-US\Helps.ps1-Help.psd1'
+			'Demo\ru-RU\Helps.ps1-Help.psd1'
+		)
 	}
+},
+RemoveMarkdownHtml,
+Clean
 
-	Remove-Item z -Force -Recurse
-	Remove-Item *.htm
-}
+# Build help files, run tests.
+task . Test

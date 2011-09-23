@@ -1,4 +1,4 @@
-﻿* Helps module - PowerShell help builder
+﻿* Helps.ps1 - PowerShell Help Builder
 * Copyright (c) 2011 Roman Kuzmin
 *
 * Licensed under the Apache License, Version 2.0 (the "License");

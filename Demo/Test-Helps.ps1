@@ -17,8 +17,8 @@ $ErrorActionPreference = 'Stop'
 
 if (!(Test-Path Test-Helps.ps1)) { throw 'Run me from my location.' }
 
-# load the module
-Import-Module Helps
+# load the script
+. Helps.ps1
 
 #.ExternalHelp Test-Helps-Help.xml
 function global:Test-Function1
@@ -55,11 +55,11 @@ Test-Helps TestProvider.dll-Help.ps1
 
 ### get full help of Helps, extra test commands and the test provider.
 @(
+	'Helps.ps1'
 	'Convert-Helps'
 	'Merge-Helps'
 	'New-Helps'
 	'Test-Helps'
-	'about_Helps'
 	'Test-Function1'
 	'Test-Function2'
 	'TestProvider'
@@ -70,7 +70,7 @@ Test-Helps TestProvider.dll-Help.ps1
 
 ### get New-Helps
 .{
-	New-Helps -Command NEW-HELPS -Indent '  '
+	New-Helps NEW-HELPS -Indent '  '
 	New-Helps -Command NEW-HELPS -LocalizedData data
 	New-Helps -Provider FILESYSTEM -Indent '  '
 	New-Helps -Provider FILESYSTEM -LocalizedData data
