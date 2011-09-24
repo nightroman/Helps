@@ -22,7 +22,7 @@ param()
 # The current version.
 function Get-HelpsVersion
 {
-	[System.Version]'1.0.4'
+	[System.Version]'1.0.5'
 }
 
 #.ExternalHelp Helps.ps1-Help.xml
@@ -667,7 +667,7 @@ function Helps.ConvertAll
 	# Replace tabs
 	# - unindent preformatted indented block
 	# - or split by empty lines, join consequent lines, join all back with empty lines.
-	function Format-Line($Line) {
+	function Format-Line([string]$Line) {
 		$Line = $Line.Replace("`t", '    ')
 		if ($Line -match $tabs) {
 			($Line -replace ("`n" + $matches[1]), "`n").Trim()
