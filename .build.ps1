@@ -10,13 +10,19 @@ param
 )
 Set-StrictMode -Version 2
 
-# Working script is located in the path, get its full path
+# Working script is located in the path, get its full path.
 $ScriptFile = (Get-Command Helps.ps1).Definition
 $ScriptRoot = Split-Path $ScriptFile
 
-# Remove generated stuff.
+# Remove temp files
 task Clean {
-	Remove-Item en-US, ru-RU -Force -Recurse
+	Remove-Item z, en-US, ru-RU -Force -Recurse -ErrorAction 0
+}
+
+# Set $script:Version
+task Version {
+	. Helps
+	$script:Version = Get-HelpsVersion
 }
 
 # Copy Helps.ps1 from its working location to the repository.
@@ -60,10 +66,11 @@ task HelpRu {
 
 # View help using the $Culture
 task View {
+	$file = "$env:TEMP\help.txt"
 	[System.Threading.Thread]::CurrentThread.CurrentUICulture = $Culture
 	. Helps.ps1
 	@(
-		'about_Helps'
+		'Helps.ps1'
 		'Convert-Helps'
 		'Merge-Helps'
 		'New-Helps'
@@ -71,39 +78,77 @@ task View {
 	) | %{
 		'#'*77
 		Get-Help $_ -Full | Out-String -Width 80
-	} | Out-File \temp\help.txt
-	notepad \temp\help.txt
+	} | Out-File $file
+	notepad $file
 }
 
 # <https://github.com/nightroman/Invoke-Build/wiki/Partial-Incremental-Tasks>
 try { Markdown.tasks.ps1 }
 catch { task ConvertMarkdown; task RemoveMarkdownHtml }
 
-# Make the public archive
-task Zip UpdateScript, ConvertMarkdown, HelpEn, HelpRu, {
-	. Helps
-	$Version = Get-HelpsVersion
+# Make the package in z\tools (e.g. for Zip, NuGet)
+task Package UpdateScript, ConvertMarkdown, HelpEn, HelpRu, {
+	# temp package folder
+	Remove-Item [z] -Force -Recurse
+	$null = mkdir z\tools\en-US, z\tools\ru-RU, z\tools\Demo\en-US, z\tools\Demo\ru-RU
 
-	exec {
-		& 7z a Helps.$Version.zip @(
-			'Helps.ps1'
-			'LICENSE.txt'
-			'README.htm'
-			'Release Notes.htm'
-			'en-US\Helps.ps1-Help.xml'
-			'ru-RU\Helps.ps1-Help.xml'
-			'Demo\Helps.ps1-Help.ps1'
-			'Demo\Test-Helps.ps1'
-			'Demo\Test-Helps-Help.ps1'
-			'Demo\TestProvider.dll-Help.ps1'
-			'Demo\TestProvider.cs'
-			'Demo\en-US\Helps.ps1-Help.psd1'
-			'Demo\ru-RU\Helps.ps1-Help.psd1'
-		)
-	}
-},
-RemoveMarkdownHtml,
-Clean
+	# copy project files
+	Copy-Item -Destination z\tools @(
+		'Helps.ps1'
+		'LICENSE.txt'
+	)
+	Copy-Item -Destination z\tools\en-US 'en-US\Helps.ps1-Help.xml'
+	Copy-Item -Destination z\tools\ru-RU 'ru-RU\Helps.ps1-Help.xml'
+	Copy-Item -Destination z\tools\Demo @(
+		'Demo\Helps.ps1-Help.ps1'
+		'Demo\Test-Helps.ps1'
+		'Demo\Test-Helps-Help.ps1'
+		'Demo\TestProvider.dll-Help.ps1'
+		'Demo\TestProvider.cs'
+	)
+	Copy-Item -Destination z\tools\Demo\en-US 'Demo\en-US\Helps.ps1-Help.psd1'
+	Copy-Item -Destination z\tools\Demo\ru-RU 'Demo\ru-RU\Helps.ps1-Help.psd1'
+
+	# move generated files
+	Move-Item -Destination z\tools @(
+		'README.htm'
+		'Release-Notes.htm'
+	)
+}
+
+# Make the zip package
+task Zip Package, Version, {
+	Set-Location z\tools
+	exec { & 7z a ..\..\Helps.$Version.zip * }
+}
+
+# Make the NuGet package
+task NuGet Package, Version, {
+	# nuspec
+	Set-Content z\Package.nuspec @"
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>Helps</id>
+		<version>$Version</version>
+		<authors>Roman Kuzmin</authors>
+		<owners>Roman Kuzmin</owners>
+		<projectUrl>https://github.com/nightroman/Helps</projectUrl>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>
+Helps.ps1 is a set of utility functions that allow to generate help script
+templates and build PowerShell XML help files from PowerShell help scripts.
+Help can be created for everything that supports XML help: cmdlets, providers,
+standalone scripts, functions in script modules, functions in script libraries.
+		</description>
+		<summary>Helps.ps1 - PowerShell Help Builder</summary>
+		<tags>powershell</tags>
+	</metadata>
+</package>
+"@
+	# pack
+	exec { NuGet pack z\Package.nuspec }
+}
 
 # Build help files, run tests.
 task . Test

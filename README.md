@@ -14,45 +14,54 @@ easy. One of them is building localized help files.
 
 ## Quick Start
 
-**Step 1:** Download and unzip *Helps*. Copy *Helps.ps1* (and one of its help
-files *Helps.ps1-Help.xml*) to the system path (see `$env:Path`). Then the
-script can be dot-sourced from the command line or scripts just by name.
+**Step 1:**
+An easy way to get and update the package is
+[NuGet.exe Command Line](http://nuget.codeplex.com/releases):
+
+    NuGet install Helps
+
+Alternatively, manually download and unzip the latest package from
+[Downloads](https://github.com/nightroman/Helps/downloads).
+
+Copy *Helps.ps1* (and one of its help files *Helps.ps1-Help.xml*) to one of the
+system path directories. Then the script can be dot-sourced from the command
+line or scripts just by name.
 
     . Helps.ps1
 
 Alternatively, *Helps.ps1* and *Helps.ps1-Help.xml* can be located anywhere,
-say, in *C:/Scripts/Help*. Then the script is dot-sourced using its path.
+say, in *C:/Scripts/Helps*. Then the script is dot-sourced using its path.
 
-    . C:/Scripts/Help/Helps.ps1
+    . C:/Scripts/Helps/Helps.ps1
 
 **Step 2:** Choose the command, for example *My-Command* cmdlet from
 *MyModule*, and make the command available, that is load the module. If
 *My-Command* is a script function then dot-source the script.
 
-    PS> Import-Module MyModule
+    Import-Module MyModule
 
 **Step 3:** Dot-source the script *Helps.ps1*. This command loads its utility
 functions into the current scope (the global scope if it is called from the
 command line).
 
-    PS> . Helps.ps1
+    . Helps.ps1
 
 **Step 4:** Create and save the template help script of *My-Command*, open the
 script in an editor and modify it (at least the synopsis should not be empty).
 
-    PS> New-Helps -Command My-Command > MyModule.dll-Help.ps1
+    New-Helps -Command My-Command > MyModule.dll-Help.ps1
 
 **Step 5:** Build the XML help *Module.dll-Help.xml* from the help script. Copy
 the result to the module/script directory or a culture resource subdirectory,
 say, *en-US*.
 
-    PS> Convert-Helps MyModule.dll-Help.ps1 MyModule.dll-Help.xml
+    Convert-Helps MyModule.dll-Help.ps1 MyModule.dll-Help.xml
 
 That is it. In a new PowerShell session import the command's module or
 dot-source the command's script and get the command help:
 
-    PS> Import MyModule
-    PS> Get-Help My-Command
+    Import MyModule
+    Get-Help My-Command
 
 ## How To Get Help
 
