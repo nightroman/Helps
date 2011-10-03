@@ -14,8 +14,12 @@ Set-StrictMode -Version 2
 $ScriptFile = (Get-Command Helps.ps1).Definition
 $ScriptRoot = Split-Path $ScriptFile
 
+# Import markdown tasks ConvertMarkdown and RemoveMarkdownHtml.
+# <https://github.com/nightroman/Invoke-Build/wiki/Partial-Incremental-Tasks>
+Markdown.tasks.ps1
+
 # Remove temp files
-task Clean {
+task Clean RemoveMarkdownHtml, {
 	Remove-Item z, en-US, ru-RU -Force -Recurse -ErrorAction 0
 }
 
@@ -25,7 +29,7 @@ task Version {
 	$script:Version = Get-HelpsVersion
 }
 
-# Copy Helps.ps1 from its working location to the repository.
+# Copy Helps.ps1 from its working location to the project.
 task UpdateScript {
 	$target = Get-Item Helps.ps1 -ErrorAction 0
 	$source = Get-Item $ScriptFile
@@ -82,13 +86,9 @@ task View {
 	notepad $file
 }
 
-# <https://github.com/nightroman/Invoke-Build/wiki/Partial-Incremental-Tasks>
-try { Markdown.tasks.ps1 }
-catch { task ConvertMarkdown; task RemoveMarkdownHtml }
-
-# Make the package in z\tools (e.g. for Zip, NuGet)
-task Package UpdateScript, ConvertMarkdown, HelpEn, HelpRu, {
-	# temp package folder
+# Make the package in z\tools for for Zip and NuGet
+task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
+	# package directories
 	Remove-Item [z] -Force -Recurse
 	$null = mkdir z\tools\en-US, z\tools\ru-RU, z\tools\Demo\en-US, z\tools\Demo\ru-RU
 
@@ -134,15 +134,18 @@ task NuGet Package, Version, {
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/Helps</projectUrl>
+		<licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<summary>
+Helps.ps1 - PowerShell Help Builder
+		</summary>
 		<description>
 Helps.ps1 is a set of utility functions that allow to generate help script
 templates and build PowerShell XML help files from PowerShell help scripts.
 Help can be created for everything that supports XML help: cmdlets, providers,
 standalone scripts, functions in script modules, functions in script libraries.
 		</description>
-		<summary>Helps.ps1 - PowerShell Help Builder</summary>
-		<tags>powershell</tags>
+		<tags>PowerShell Help Builder</tags>
 	</metadata>
 </package>
 "@
