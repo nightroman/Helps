@@ -145,7 +145,7 @@ templates and build PowerShell XML help files from PowerShell help scripts.
 Help can be created for everything that supports XML help: cmdlets, providers,
 standalone scripts, functions in script modules, functions in script libraries.
 		</description>
-		<tags>PowerShell Help Builder</tags>
+		<tags>powershell help builder</tags>
 	</metadata>
 </package>
 "@
