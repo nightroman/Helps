@@ -1,12 +1,10 @@
 
 # Helps.ps1 - PowerShell Help Builder
 
-![BTFM](https://github.com/downloads/nightroman/Helps/BTFM.png)
-
-*Helps.ps1* is a set of utility functions that allow to generate help script
-templates and build PowerShell XML help files from PowerShell help scripts.
-Help can be created for everything that supports XML help: cmdlets, providers,
-standalone scripts, functions in script modules, functions in script libraries.
+Helps.ps1 provides functions for building PowerShell XML help files from help
+scripts and for creating help script templates for existing objects. Help can
+be created for everything that supports XML help: cmdlets, providers, scripts,
+and functions in scripts or modules.
 
 Help scripts are almost WYSIWYG, they look very similar to the result help.
 Still, they are PowerShell scripts and this makes a lot of useful features

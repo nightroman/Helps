@@ -3,10 +3,10 @@
 	### Helps.ps1
 	Helpsps1Synopsis = 'Helps.ps1 - PowerShell Help Builder'
 	Helpsps1Description = @'
-	Helps.ps1 is a set of utility functions that allow to generate help script
-	templates and build PowerShell XML help files from PowerShell help scripts.
-	Help can be created for everything that supports XML help: providers,
-	cmdlets, standalone scripts, functions in modules, functions in scripts.
+	Helps.ps1 provides functions for building PowerShell XML help files from
+	help scripts and for creating help script templates for existing objects.
+	Help can be created for everything that supports XML help: cmdlets,
+	providers, scripts, and functions in scripts or modules.
 
 	Help scripts are almost WYSIWYG, they look very similar to the result help.
 	Still, they are PowerShell scripts and this makes a lot of useful features

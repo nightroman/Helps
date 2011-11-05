@@ -124,7 +124,12 @@ task Zip Package, Version, {
 
 # Make the NuGet package
 task NuGet Package, Version, {
-	# nuspec
+	$text = @'
+Helps.ps1 provides functions for building PowerShell XML help files from help
+scripts and for creating help script templates for existing objects. Help can
+be created for everything that supports XML help: cmdlets, providers, scripts,
+and functions in scripts or modules.
+'@
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -136,15 +141,8 @@ task NuGet Package, Version, {
 		<projectUrl>https://github.com/nightroman/Helps</projectUrl>
 		<licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>
-Helps.ps1 - PowerShell Help Builder
-		</summary>
-		<description>
-Helps.ps1 is a set of utility functions that allow to generate help script
-templates and build PowerShell XML help files from PowerShell help scripts.
-Help can be created for everything that supports XML help: cmdlets, providers,
-standalone scripts, functions in script modules, functions in script libraries.
-		</description>
+		<summary>$text</summary>
+		<description>$text</description>
 		<tags>powershell help builder</tags>
 	</metadata>
 </package>
