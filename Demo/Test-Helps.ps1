@@ -82,7 +82,7 @@ if (Test-Path Test-Helps-Help.txt) {
 	$new = (Get-Content Test-Helps-Help.log) -join "`n"
 	$val = (Get-Content Test-Helps-Help.txt) -join "`n"
 	if ($new -ceq $val) {
-		Write-Host -ForegroundColor Green 'The result is expected.'
+		'The result is expected.'
 		Remove-Item Test-Helps-Help.log
 	}
 	else {

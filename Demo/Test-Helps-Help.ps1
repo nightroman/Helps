@@ -126,7 +126,7 @@ Remarks. Joined second long line in a new paragraph.
 				. $args[0]
 				if ($result1 -ne 6) { throw }
 				if ($result2 -ne 4) { throw }
-				Write-Host Tested command example
+				'Tested command example.'
 			}
 		}
 		@{

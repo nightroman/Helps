@@ -74,7 +74,7 @@ text text text text text text text text text
 						. $args[0]
 						if ($result1 -ne 6) { throw }
 						if ($result2 -ne 4) { throw }
-						Write-Host Tested provider example
+						'Tested provider example.'
 					}
 				}
 			)
