@@ -169,13 +169,14 @@ But more strings are not shown as new lines:
 	links = @(
 		@{
 			text = '<text>Both text<text>'
-			URI = '<URI>and URI<URI>'
+			URI = 'https://github.com/nightroman/Helps'
 		}
 		@{
 			text = '<text>Just text<text>'
 		}
+		# Just URI. Note an extra leading space.
 		@{
-			URI = '<URI>Just URI. Note an extra leading space.<URI>'
+			URI = 'https://github.com/nightroman/Helps'
 		}
 	)
 }

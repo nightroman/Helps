@@ -20,7 +20,7 @@ Markdown.tasks.ps1
 
 # Remove temp files
 task Clean RemoveMarkdownHtml, {
-	Remove-Item z, en-US, ru-RU -Force -Recurse -ErrorAction 0
+	Remove-Item z, en-US, ru-RU, Helps.*.zip, Helps.*.nupkg -Force -Recurse -ErrorAction 0
 }
 
 # Set $script:Version
@@ -148,8 +148,11 @@ and functions in scripts or modules.
 </package>
 "@
 	# pack
-	exec { NuGet pack z\Package.nuspec }
+	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 }
+
+# Make all packages.
+task Pack Zip, NuGet
 
 # Build help files, run tests.
 task . Test

@@ -1,6 +1,10 @@
 Helps Release Notes
 ===================
 
+## v1.0.6
+
+Adapted for PowerShell V3 CTP2.
+
 ## v1.0.4, v1.0.5
 
 **Breaking change**

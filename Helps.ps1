@@ -21,9 +21,7 @@ param()
 
 # The current version.
 function Get-HelpsVersion
-{
-	[System.Version]'1.0.5'
-}
+{[System.Version]'1.0.6'}
 
 #.ExternalHelp Helps.ps1-Help.xml
 function Convert-Helps
@@ -41,7 +39,7 @@ function Convert-Helps
 {
 	$ErrorActionPreference = 'Stop'
 	Set-StrictMode -Version 2
-	$$ = @{}
+	$1 = @{}
 
 	. Helps.ConvertAll (Helps.Import $Script $Parameters -Test) $Output
 }
@@ -646,7 +644,7 @@ function Helps.ConvertAll
 )
 {
 	# to watch cmdlet or non-cmdlet, mixed help is not allowed
-	$$.CommandType = $null
+	$1.CommandType = $null
 
 	### sorting
 	$sortParameterInSyntax = @(
@@ -713,7 +711,7 @@ function Helps.ConvertAll
 		"</$TagSet>"
 	}
 
-	$$.TagsExampleCommand = @{
+	$1.TagsExampleCommand = @{
 		examples = 'command:examples'
 		example = 'command:example'
 		title = 'maml:title'
@@ -723,7 +721,7 @@ function Helps.ConvertAll
 		remarks = 'dev:remarks'
 	}
 
-	$$.TagsExamplesProvider = @{
+	$1.TagsExamplesProvider = @{
 		examples = 'Examples'
 		example = 'Example'
 		title = 'Title'
@@ -791,14 +789,14 @@ function Helps.ConvertAll
 		"</$($tags.examples)>"
 	}
 
-	$$.TagsLinksCommand = @{
+	$1.TagsLinksCommand = @{
 		links = 'maml:relatedLinks'
 		link = 'maml:navigationLink'
 		text = 'maml:linkText'
 		URI = 'maml:uri'
 	}
 
-	$$.TagsLinksProvider = @{
+	$1.TagsLinksProvider = @{
 		links = 'RelatedLinks'
 		link = 'navigationLink'
 		text = 'linkText'
@@ -829,7 +827,7 @@ function Helps.ConvertAll
 	}
 
 	function Get-ParameterSet {
-		$$.Command.ParameterSets | Sort-Object { $_.Parameters.Count }, Name
+		$1.Command.ParameterSets | Sort-Object { $_.Parameters.Count }, Name
 	}
 
 	function Get-CommandParameter($Command, $Sort) {
@@ -847,11 +845,11 @@ function Helps.ConvertAll
 	)
 	function Test-Type($Hash) {
 		if ($Hash -isnot [hashtable]) {
-			throw "$($$.Name) : Invalid input/output type. Expected : Hashtable. Actual : $($Hash.GetType())."
+			throw "$($1.Name) : Invalid input/output type. Expected : Hashtable. Actual : $($Hash.GetType())."
 		}
 		foreach($key in $Hash.Keys) {
 			if ($validTypeKeys -notcontains $key) {
-				throw "$($$.Name) : Invalid input/output key : $key. Valid keys : $validTypeKeys."
+				throw "$($1.Name) : Invalid input/output key : $key. Valid keys : $validTypeKeys."
 			}
 		}
 	}
@@ -865,11 +863,11 @@ function Helps.ConvertAll
 	)
 	function Test-Example($Hash) {
 		if ($Hash -isnot [hashtable]) {
-			throw "$($$.Name) : Invalid example type. Expected : Hashtable. Actual : $($Hash.GetType())."
+			throw "$($1.Name) : Invalid example type. Expected : Hashtable. Actual : $($Hash.GetType())."
 		}
 		foreach($key in $Hash.Keys) {
 			if ($validExampleKeys -notcontains $key) {
-				throw "$($$.Name) : Invalid example key : $key. Valid keys : $validExampleKeys."
+				throw "$($1.Name) : Invalid example key : $key. Valid keys : $validExampleKeys."
 			}
 		}
 	}
@@ -880,11 +878,11 @@ function Helps.ConvertAll
 	)
 	function Test-Link($Hash) {
 		if ($Hash -isnot [hashtable]) {
-			throw "$($$.Name) : Invalid link type. Expected : Hashtable. Actual : $($Hash.GetType())."
+			throw "$($1.Name) : Invalid link type. Expected : Hashtable. Actual : $($Hash.GetType())."
 		}
 		foreach($key in $Hash.Keys) {
 			if ($validLinkKeys -notcontains $key) {
-				throw "$($$.Name) : Invalid link key : $key. Valid keys : $validLinkKeys."
+				throw "$($1.Name) : Invalid link key : $key. Valid keys : $validLinkKeys."
 			}
 		}
 	}
@@ -896,11 +894,11 @@ function Helps.ConvertAll
 	)
 	function Test-Task($Hash) {
 		if ($Hash -isnot [hashtable]) {
-			throw "$($$.Name) : Invalid task type. Expected : Hashtable. Actual : $($Hash.GetType())."
+			throw "$($1.Name) : Invalid task type. Expected : Hashtable. Actual : $($Hash.GetType())."
 		}
 		foreach($key in $Hash.Keys) {
 			if ($validTaskKeys -notcontains $key) {
-				throw "$($$.Name) : Invalid task key : $key. Valid keys : $validTaskKeys."
+				throw "$($1.Name) : Invalid task key : $key. Valid keys : $validTaskKeys."
 			}
 		}
 	}
@@ -914,11 +912,11 @@ function Helps.ConvertAll
 	)
 	function Test-Parameter($Hash) {
 		if ($Hash -isnot [hashtable]) {
-			throw "$($$.Name) : Invalid 'parameters' type. Expected : Hashtable. Actual : $($Hash.GetType())."
+			throw "$($1.Name) : Invalid 'parameters' type. Expected : Hashtable. Actual : $($Hash.GetType())."
 		}
 		foreach($key in $Hash.Keys) {
 			if ($validParameterKeys -notcontains $key) {
-				throw "$($$.Name) : Invalid parameter key : $key. Valid keys : $validParameterKeys."
+				throw "$($1.Name) : Invalid parameter key : $key. Valid keys : $validParameterKeys."
 			}
 		}
 	}
@@ -929,11 +927,11 @@ function Helps.ConvertAll
 	)
 	function Test-ParameterValue($Hash) {
 		if ($Hash -isnot [hashtable]) {
-			throw "$($$.Name) : Invalid parameter value type. Expected : Hashtable. Actual : $($Hash.GetType())."
+			throw "$($1.Name) : Invalid parameter value type. Expected : Hashtable. Actual : $($Hash.GetType())."
 		}
 		foreach($key in $Hash.Keys) {
 			if ($validParameterValueKeys -notcontains $key) {
-				throw "$($$.Name) : Invalid parameter value key : $key. Valid keys : $validParameterValueKeys."
+				throw "$($1.Name) : Invalid parameter value key : $key. Valid keys : $validParameterValueKeys."
 			}
 		}
 	}
@@ -971,8 +969,8 @@ function Helps.ConvertCommand
 	$Help
 )
 {
-	$$.Name = $Help.command
-	if ($$.Name -match '^(\w+)-(\w+)$') {
+	$1.Name = $Help.command
+	if ($1.Name -match '^(\w+)-(\w+)$') {
 		$verb = $matches[1]
 		$noun = $matches[2]
 	}
@@ -981,11 +979,11 @@ function Helps.ConvertCommand
 		$noun = $null
 	}
 
-	$$.Command = Get-Command $$.Name
+	$1.Command = Get-Command $1.Name
 
 	# check command type
-	if ($$.CommandType) {
-		if (($$.CommandType -eq 'Cmdlet') -and ($$.Command.CommandType -ne 'Cmdlet')) {
+	if ($1.CommandType) {
+		if (($1.CommandType -eq 'Cmdlet') -and ($1.Command.CommandType -ne 'Cmdlet')) {
 			throw @'
 Function/cmdlet help cannot share a cmdlet/function help file:
 http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share-a-cmdlet-help-file.aspx
@@ -993,7 +991,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 		}
 	}
 	else {
-		$$.CommandType = $$.Command.CommandType
+		$1.CommandType = $1.Command.CommandType
 	}
 
 	### command
@@ -1003,14 +1001,14 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 '@
 
 	@"
-<command:name>$($$.Name)</command:name>
+<command:name>$($1.Name)</command:name>
 "@
 
 	### synopsis
 
 	$synopsis = @($Help.synopsis)
 	if (!$synopsis) {
-		throw "$($$.Name) : Synopsis should not be empty."
+		throw "$($1.Name) : Synopsis should not be empty."
 	}
 
 	Out-Text maml:description maml:para $synopsis
@@ -1041,7 +1039,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 	$sets = $Help['sets']
 	if ($sets) {
 		if ($sets -isnot [Hashtable]) {
-			throw "$($$.Name) : Invalid 'sets' type. Expected : Hashtable. Actual : $($sets.GetType())."
+			throw "$($1.Name) : Invalid 'sets' type. Expected : Hashtable. Actual : $($sets.GetType())."
 		}
 		$sets = @{} + $sets
 		foreach($set in Get-ParameterSet) {
@@ -1049,7 +1047,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 			$sets.Remove($set.Name)
 			if ($remarks) {
 				$description += ''
-				$description += "> $($$.Name) " + (Get-ParameterSetParameter $set $sortParameterInSyntax | .{process{
+				$description += "> $($1.Name) " + (Get-ParameterSetParameter $set $sortParameterInSyntax | .{process{
 					if ($_.IsMandatory) {
 						"-$($_.Name)"
 					}
@@ -1061,7 +1059,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 			}
 		}
 		if ($sets.Count) {
-			throw "$($$.Name) : Invalid parameter set names : $($sets.Keys)"
+			throw "$($1.Name) : Invalid parameter set names : $($sets.Keys)"
 		}
 	}
 
@@ -1073,7 +1071,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 	foreach($set in Get-ParameterSet) {
 		'<command:syntaxItem>'
-		"<maml:name>$($$.Name)</maml:name>"
+		"<maml:name>$($1.Name)</maml:name>"
 		$set.Parameters | Sort-Object $sortParameterInSyntax | .{process{ if (Helps.IsParameter $_.Name) {
 			$start = '<command:parameter '
 
@@ -1102,7 +1100,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 	$parameters = $Help['parameters']
 	if ($parameters) {
 		if ($parameters -isnot [Hashtable]) {
-			throw "$($$.Name) : Invalid 'parameters' type. Expected : Hashtable. Actual : $($parameters.GetType())."
+			throw "$($1.Name) : Invalid 'parameters' type. Expected : Hashtable. Actual : $($parameters.GetType())."
 		}
 		$parameters = @{} + $parameters
 	}
@@ -1112,7 +1110,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 	'<command:parameters>'
 
-	Get-CommandParameter $$.Command { if ($_.Position -ge 0) { $_.Position } else { 999 } }, Name | .{process{
+	Get-CommandParameter $1.Command { if ($_.Position -ge 0) { $_.Position } else { 999 } }, Name | .{process{
 		$start = '<command:parameter '
 
 		# required
@@ -1139,7 +1137,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 		$parameterDescription = @($parameters[$_.Name])
 		if (!$parameterDescription) {
-			Write-Warning "$($$.Name) : missing parameter description : $($_.Name)"
+			Write-Warning "$($1.Name) : missing parameter description : $($_.Name)"
 		}
 		if ($_.ParameterType.IsEnum) {
 			$parameterDescription += 'Values : ' + ([Enum]::GetValues($_.ParameterType) -join ', ')
@@ -1153,7 +1151,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 	}}
 
 	if ($parameters.Count) {
-		throw "$($$.Name) : Invalid parameter names : $($parameters.Keys)."
+		throw "$($1.Name) : Invalid parameter names : $($parameters.Keys)."
 	}
 
 	'</command:parameters>'
@@ -1162,7 +1160,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 	$inputs = $Help['inputs']
 	if ($null -eq $inputs) {
-		Write-Warning "$($$.Name) : Missing 'inputs' entry. If it is empty then set it to @()."
+		Write-Warning "$($1.Name) : Missing 'inputs' entry. If it is empty then set it to @()."
 	}
 	else {
 		$inputs = @($inputs)
@@ -1181,7 +1179,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 	$outputs = $Help['outputs']
 	if ($null -eq $outputs) {
-		Write-Warning "$($$.Name) : Missing 'outputs' entry. If it is empty then set it to @()."
+		Write-Warning "$($1.Name) : Missing 'outputs' entry. If it is empty then set it to @()."
 	}
 	else {
 		$outputs = @($outputs)
@@ -1209,14 +1207,14 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 	$examples = @($Help['examples'])
 	if ($examples) {
-		Out-Examples $examples $$.TagsExampleCommand
+		Out-Examples $examples $1.TagsExampleCommand
 	}
 
 	### links
 
 	$links = @($Help['links'])
 	if ($links) {
-		Out-Links $links $$.TagsLinksCommand
+		Out-Links $links $1.TagsLinksCommand
 	}
 
 	# complete command
@@ -1230,13 +1228,13 @@ function Helps.ConvertProvider
 	$Help
 )
 {
-	$$.Name = $Help.provider
+	$1.Name = $Help.provider
 
 	### begin provider
 
 	@"
 <providerHelp>
-<Name>$($$.Name)</Name>
+<Name>$($1.Name)</Name>
 "@
 
 	### drives
@@ -1250,7 +1248,7 @@ function Helps.ConvertProvider
 
 	$synopsis = @($Help['synopsis'])
 	if (!$synopsis) {
-		throw "$($$.Name) : Synopsis should not be empty."
+		throw "$($1.Name) : Synopsis should not be empty."
 	}
 	Out-Line Synopsis $synopsis
 
@@ -1296,7 +1294,7 @@ function Helps.ConvertProvider
 
 			$examples = @($task['examples'])
 			if ($examples) {
-				Out-Examples $examples $$.TagsExamplesProvider
+				Out-Examples $examples $1.TagsExamplesProvider
 			}
 
 			'</Task>'
@@ -1385,7 +1383,7 @@ function Helps.ConvertProvider
 
 	$links = @($Help['links'])
 	if ($links) {
-		Out-Links $links $$.TagsLinksProvider
+		Out-Links $links $1.TagsLinksProvider
 	}
 
 	### end provider
