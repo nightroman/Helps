@@ -17,7 +17,7 @@ $ErrorActionPreference = 'Stop'
 
 if (!(Test-Path Test-Helps.ps1)) { throw 'Run me from my location.' }
 $log = 'Helps-Test.log'
-$expected = "$env:TEMP\Helps-Test.$($PSVersionTable.PSVersion.Major).txt"
+$expected = "$env:LOCALAPPDATA\Helps-Test.$($PSVersionTable.PSVersion.Major).txt"
 
 # load the script
 . Helps.ps1

@@ -1,7 +1,7 @@
 
 <#
 * Helps.ps1 - PowerShell Help Builder
-* Copyright 2011 Roman Kuzmin
+* Copyright (c) 2011-2013 Roman Kuzmin
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.

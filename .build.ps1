@@ -20,7 +20,7 @@ Markdown.tasks.ps1
 
 # Remove temp files
 task Clean RemoveMarkdownHtml, {
-	Remove-Item z, en-US, ru-RU, Helps.*.zip, Helps.*.nupkg -Force -Recurse -ErrorAction 0
+	Remove-Item z, en-US, ru-RU, Helps.*.nupkg -Force -Recurse -ErrorAction 0
 }
 
 # Set $script:Version
@@ -86,7 +86,7 @@ task View {
 	notepad $file
 }
 
-# Make the package in z\tools for for Zip and NuGet
+# Make the package in z\tools for NuGet
 task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
 	# package directories
 	Remove-Item [z] -Force -Recurse
@@ -114,12 +114,6 @@ task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
 		'README.htm'
 		'Release-Notes.htm'
 	)
-}
-
-# Make the zip package
-task Zip Package, Version, {
-	Set-Location z\tools
-	exec { & 7z a ..\..\Helps.$Version.zip * }
 }
 
 # Make the NuGet package
@@ -150,9 +144,6 @@ and functions in scripts or modules.
 	# pack
 	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 }
-
-# Make all packages.
-task Pack Zip, NuGet
 
 # Build help files, run tests.
 task . Test

@@ -13,13 +13,14 @@ easy. One of them is building localized help files.
 ## Quick Start
 
 **Step 1:**
-An easy way to get and update the package is
+Helps is distributed as a NuGet package. An easy way to get and update it is
 [NuGet.exe Command Line](http://nuget.codeplex.com/releases):
 
     NuGet install Helps
 
-Alternatively, manually download and unzip the latest package from
-[Downloads](https://github.com/nightroman/Helps/downloads).
+This command checks for the latest available version, downloads, and unzips the
+package to a directory named *Helps.(version)*. The scripts and other files are
+located in its subdirectory *tools*.
 
 Copy *Helps.ps1* (and one of its help files *Helps.ps1-Help.xml*) to one of the
 system path directories. Then the script can be dot-sourced from the command
