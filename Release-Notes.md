@@ -1,6 +1,18 @@
 Helps Release Notes
 ===================
 
+## v1.0.7
+
+Improved various errors thrown by the engine. Added tests covering some errors.
+
+Replaced the word "None" for empty `inputs` and `outputs` (`@()`) with the
+culture neutral symbol "-". If this is not suitable then do not use `@()`.
+
+Mixed help (cmdlets and functions together) is allowed. But it still should be
+avoided because there are issues in PowerShell v2.
+
+Renamed own help file *Helps.ps1-Help.xml* files to *Helps-Help.xml*.
+
 ## v1.0.6
 
 Adapted for PowerShell V3 CTP2.

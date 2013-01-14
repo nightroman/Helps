@@ -20,7 +20,7 @@
 
 .Example
 	. Helps.ps1
-	Convert-Helps Helps.ps1-Help.ps1 Helps.ps1-Help.xml @{ UICulture = 'ru-RU' }
+	Convert-Helps Helps-Help.ps1 Helps-Help.xml @{ UICulture = 'ru-RU' }
 #>
 
 param
@@ -35,9 +35,7 @@ Import-LocalizedData -BindingVariable data -UICulture $UICulture
 
 $AnyHelp = @{
 	inputs = @()
-	links = @(
-		@{ text = 'about_Helps' }
-	)
+	links = @()
 }
 
 ### Base help to be inherited by Convert-Helps and Test-Helps
@@ -63,6 +61,8 @@ $BaseHelp = Merge-Helps $AnyHelp @{
 		@{ text = 'Merge-Helps' }
 		@{ text = 'New-Helps' }
 		@{ text = 'Test-Helps' }
+		@{ URI = 'https://github.com/nightroman/Helps/wiki/Command-Help-Script' }
+		@{ URI = 'https://github.com/nightroman/Helps/wiki/Provider-Help-Script' }
 	)
 }
 
@@ -79,7 +79,7 @@ Merge-Helps $BaseHelp @{
 			remarks = $data.ConvertHelpsExampleRemarks
 			code = {
 				. Helps.ps1
-				Convert-Helps Helps.ps1-Help.ps1 temp.xml
+				Convert-Helps Helps-Help.ps1 temp.xml
 			}
 			test = {
 				. $args[0]

@@ -75,7 +75,7 @@
 
 	EXAMPLES
 
-	Demo\Helps.ps1-Help.ps1
+	Demo\Helps-Help.ps1
 		The help script for Helps.ps1 and its functions.
 
 	Demo\Test-Helps-Help.ps1
@@ -91,7 +91,7 @@
 	OutputParameter = 'Output MAML help file (typically "ModuleName.dll-Help.xml").'
 	ParametersParameter = 'Parameters to be passed in the help source scripts.'
 	ConvertHelpsExampleRemarks = @'
-It builds the help file "temp.xml" from the help script "Helps.ps1-Help.ps1".
+It builds the help file "temp.xml" from the help script "Helps-Help.ps1".
 '@
 
 	### Test-Helps

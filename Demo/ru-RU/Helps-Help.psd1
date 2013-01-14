@@ -77,7 +77,7 @@
 
 	ПРИМЕРЫ
 
-	Demo\Helps.ps1-Help.ps1
+	Demo\Helps-Help.ps1
 		Исходник помощи для Helps.ps1 и его функций.
 
 	Demo\Test-Helps-Help.ps1
@@ -93,7 +93,7 @@
 	OutputParameter = 'Путь создаваемого MAML файла помощи (обычно "ModuleName.dll-Help.xml").'
 	ParametersParameter = 'Параметры, передаваемые в исходные скрипты помощи.'
 	ConvertHelpsExampleRemarks = @'
-Создает файл помощи "temp.xml" из исходного скрипта помощи "Helps.ps1-Help.ps1".
+Создает файл помощи "temp.xml" из исходного скрипта помощи "Helps-Help.ps1".
 '@
 
 	### Test-Helps

@@ -20,7 +20,7 @@ Markdown.tasks.ps1
 
 # Remove temp files
 task Clean RemoveMarkdownHtml, {
-	Remove-Item z, en-US, ru-RU, Helps.*.nupkg -Force -Recurse -ErrorAction 0
+	Remove-Item z, z.ps1, en-US, ru-RU, Helps.*.nupkg -Force -Recurse -ErrorAction 0
 }
 
 # Set $script:Version
@@ -40,7 +40,13 @@ task UpdateScript {
 # Calls Demo\Test-Helps.ps1
 task Test UpdateScript, HelpEn, HelpRu, {
 	Set-Location Demo
+
 	.\Test-Helps.ps1
+
+	Invoke-Build * -Result result
+	assert (46 -eq $result.Tasks.Count) $result.Tasks.Count
+	assert (0 -eq $result.Errors.Count) $result.Errors.Count
+	assert (4 -eq $result.Warnings.Count)
 },
 Clean
 
@@ -49,12 +55,12 @@ task HelpEn {
 	$null = mkdir en-US -Force
 
 	. Helps.ps1
-	Convert-Helps Demo\Helps.ps1-Help.ps1 .\en-US\Helps.ps1-Help.xml @{ UICulture = 'en-US' }
+	Convert-Helps Demo\Helps-Help.ps1 .\en-US\Helps-Help.xml @{ UICulture = 'en-US' }
 
-	Copy-Item .\en-US\Helps.ps1-Help.xml $ScriptRoot\Helps.ps1-Help.xml
+	Copy-Item .\en-US\Helps-Help.xml $ScriptRoot\Helps-Help.xml
 
 	Set-Location Demo
-	Test-Helps Helps.ps1-Help.ps1
+	Test-Helps Helps-Help.ps1
 }
 
 # Build and test ru-RU help
@@ -62,10 +68,10 @@ task HelpRu {
 	$null = mkdir ru-RU -Force
 
 	. Helps.ps1
-	Convert-Helps Demo\Helps.ps1-Help.ps1 .\ru-RU\Helps.ps1-Help.xml @{ UICulture = 'ru-RU' }
+	Convert-Helps Demo\Helps-Help.ps1 .\ru-RU\Helps-Help.xml @{ UICulture = 'ru-RU' }
 
 	Set-Location Demo
-	Test-Helps Helps.ps1-Help.ps1
+	Test-Helps Helps-Help.ps1
 }
 
 # View help using the $Culture
@@ -97,17 +103,17 @@ task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
 		'Helps.ps1'
 		'LICENSE.txt'
 	)
-	Copy-Item -Destination z\tools\en-US 'en-US\Helps.ps1-Help.xml'
-	Copy-Item -Destination z\tools\ru-RU 'ru-RU\Helps.ps1-Help.xml'
+	Copy-Item -Destination z\tools\en-US 'en-US\Helps-Help.xml'
+	Copy-Item -Destination z\tools\ru-RU 'ru-RU\Helps-Help.xml'
 	Copy-Item -Destination z\tools\Demo @(
-		'Demo\Helps.ps1-Help.ps1'
+		'Demo\Helps-Help.ps1'
 		'Demo\Test-Helps.ps1'
 		'Demo\Test-Helps-Help.ps1'
 		'Demo\TestProvider.dll-Help.ps1'
 		'Demo\TestProvider.cs'
 	)
-	Copy-Item -Destination z\tools\Demo\en-US 'Demo\en-US\Helps.ps1-Help.psd1'
-	Copy-Item -Destination z\tools\Demo\ru-RU 'Demo\ru-RU\Helps.ps1-Help.psd1'
+	Copy-Item -Destination z\tools\Demo\en-US 'Demo\en-US\Helps-Help.psd1'
+	Copy-Item -Destination z\tools\Demo\ru-RU 'Demo\ru-RU\Helps-Help.psd1'
 
 	# move generated files
 	Move-Item -Destination z\tools @(

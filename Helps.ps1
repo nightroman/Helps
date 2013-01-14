@@ -16,49 +16,33 @@
 * limitations under the License.
 #>
 
-#.ExternalHelp Helps.ps1-Help.xml
+#.ExternalHelp Helps-Help.xml
 param()
 
 # The current version.
 function Get-HelpsVersion
-{[System.Version]'1.0.6'}
+{[System.Version]'1.0.7'}
 
-#.ExternalHelp Helps.ps1-Help.xml
-function Convert-Helps
-(
-	[Parameter(Position = 0, Mandatory = $true)]
-	[ValidateNotNullOrEmpty()]
-	[string[]]$Script
-	,
-	[Parameter(Position = 1, Mandatory = $true)]
-	[string]$Output
-	,
-	[Parameter(Position = 2)]
-	[hashtable]$Parameters = @{}
-)
-{
+#.ExternalHelp Helps-Help.xml
+function Convert-Helps(
+	[Parameter(Position=0, Mandatory=1)][ValidateNotNullOrEmpty()][string[]]$Script,
+	[Parameter(Position=1, Mandatory=1)][string]$Output,
+	[Parameter(Position=2)][hashtable]$Parameters=@{}
+) {
 	$ErrorActionPreference = 'Stop'
-	Set-StrictMode -Version 2
+	# resolve output now, script may change the location
+	$Output = $PSCmdlet.GetUnresolvedProviderPathFromPSPath($Output)
+	# shared data
 	$1 = @{}
-
-	. Helps.ConvertAll (Helps.Import $Script $Parameters -Test) $Output
+	# import and convert
+	. Helps.ConvertAll (Helps.Import $Script $Parameters) $Output
 }
 
-#.ExternalHelp Helps.ps1-Help.xml
-function Merge-Helps
-(
-	[Parameter(Position = 0, Mandatory = $true)]
-	[ValidateNotNull()]
-	[hashtable]$First
-	,
-	[Parameter(Position = 1, Mandatory = $true)]
-	[ValidateNotNull()]
-	[hashtable]$Second
-)
-{
-	Set-StrictMode -Version 2
-	$ErrorActionPreference = 'Stop'
-
+#.ExternalHelp Helps-Help.xml
+function Merge-Helps(
+	[Parameter(Position=0, Mandatory=1)][ValidateNotNull()][hashtable]$First,
+	[Parameter(Position=1, Mandatory=1)][ValidateNotNull()][hashtable]$Second
+) {
 	# copy the first table
 	$First = @{} + $First
 
@@ -72,12 +56,8 @@ function Merge-Helps
 		}
 		# merge parameter tables
 		elseif ($key -eq 'parameters') {
-			if ($value1 -isnot [hashtable]) {
-				throw "Invalid 'parameters' type. Expected : Hashtable."
-			}
-			if ($value2 -isnot [hashtable]) {
-				throw "Invalid 'parameters' type. Expected : Hashtable."
-			}
+			if ($value1 -isnot [hashtable]) {Helps.Error "First: 'parameters' must be hashtable." 5}
+			if ($value2 -isnot [hashtable]) {Helps.Error "Second: 'parameters' must be hashtable." 5}
 			$First[$key] = $value1 + $value2
 		}
 		# append second arrays to the first
@@ -94,31 +74,23 @@ function Merge-Helps
 	$First
 }
 
-#.ExternalHelp Helps.ps1-Help.xml
-function Test-Helps
-(
-	[Parameter(Position = 0, Mandatory = $true)]
-	[ValidateNotNullOrEmpty()]
-	[string[]]$Script
-	,
-	[Parameter()]
+#.ExternalHelp Helps-Help.xml
+function Test-Helps(
+	[Parameter(Position=0, Mandatory=1)][ValidateNotNullOrEmpty()][string[]]$Script,
 	[hashtable]$Parameters = @{}
-)
-{
+) {
+	$ErrorActionPreference = 'Stop'
 	${private:-script} = $Script
 	${private:-parameters} = $Parameters
 	Remove-Variable Script, Parameters
 
 	foreach(${private:-help} in (Helps.Import ${private:-script} ${private:-parameters})) {
-		${private:-name} = ${private:-help}['command']
-		if (${private:-name}) {
+		# get examples
+		if (${private:-name} = ${private:-help}['command']) {
 			${private:-examples} = @(${private:-help}['examples'])
 		}
 		else {
 			${private:-name} = ${private:-help}['provider']
-			if (!${private:-name}) {
-				throw "Invalid help entry: expected 'command' or 'provider'."
-			}
 			${private:-examples} = @()
 			${private:-tasks} = @(${private:-help}['tasks'])
 			foreach(${private:-task} in ${private:-tasks}) {
@@ -128,9 +100,7 @@ function Test-Helps
 				}
 			}
 		}
-		if (!${private:-examples}) {
-			continue
-		}
+		if (!${private:-examples}) {continue}
 
 		${private:-number} = 0
 		foreach(${private:-example} in ${private:-examples}) {
@@ -138,12 +108,12 @@ function Test-Helps
 			${private:-test} = ${private:-example}['test']
 			if (${private:-test}) {
 				if (${private:-test} -isnot [scriptblock]) {
-					throw "${private:-name} : example ${private:-number} : 'test' is not a script block."
+					Helps.Error "Example ${private:-number} of '${private:-name}': 'test' must be script block."
 				}
 
 				${private:-code} = ${private:-example}['code']
 				if (${private:-code} -isnot [scriptblock]) {
-					throw "${private:-name} : example ${private:-number} : 'code' is not a script block."
+					Helps.Error "Example ${private:-number} of '${private:-name}': 'code' must be script block."
 				}
 
 				'#'*77
@@ -155,50 +125,38 @@ function Test-Helps
 	}
 }
 
-#.ExternalHelp Helps.ps1-Help.xml
-function New-Helps
-(
-	[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'Command')]
-	[ValidateScript({ ($_ -is [string]) -or ($_ -is [System.Management.Automation.CommandInfo]) })]
-	$Command
-	,
-	[Parameter(Mandatory = $true, ParameterSetName = 'Provider')]
-	[ValidateScript({ ($_ -is [string]) -or ($_ -is [System.Management.Automation.ProviderInfo]) })]
-	$Provider
-	,
-	[Parameter()]
-	[string]$Indent = "`t"
-	,
-	[Parameter()]
-	[ValidateNotNullOrEmpty()]
-	[string]$LocalizedData
-)
-{
-	Set-StrictMode -Version 2
+#.ExternalHelp Helps-Help.xml
+function New-Helps(
+	[Parameter(Position=0, Mandatory=1, ParameterSetName='Command')]
+	[ValidateScript({$_ -is [string] -or $_ -is [System.Management.Automation.CommandInfo]})]
+	$Command,
+	[Parameter(Mandatory=1, ParameterSetName='Provider')]
+	[ValidateScript({$_ -is [string] -or $_ -is [System.Management.Automation.ProviderInfo]})]
+	$Provider,
+	[string]$Indent = "`t",
+	[ValidateNotNullOrEmpty()][string]$LocalizedData
+) {
 	$ErrorActionPreference = 'Stop'
-
 	switch($PSCmdlet.ParameterSetName) {
-		'Command' { Helps.NewCommand $Command $Indent $LocalizedData }
-		'Provider' { Helps.NewProvider $Provider $Indent $LocalizedData }
+		Command { Helps.NewCommand $Command $Indent $LocalizedData }
+		Provider { Helps.NewProvider $Provider $Indent $LocalizedData }
 	}
 }
 
+# Terminating error
+function Helps.Error($M, $C=0)
+{$PSCmdlet.ThrowTerminatingError((New-Object System.Management.Automation.ErrorRecord ([Exception]"$M"), $null, $C, $null))}
+
 # Filters out common parameters.
-function Helps.IsParameter
-(
-	$Name
-)
-{
+function Helps.IsParameter($Name) {
 	@('Verbose', 'Debug', 'ErrorAction', 'ErrorVariable', 'WarningAction', 'WarningVariable', 'OutVariable', 'OutBuffer') -notcontains $Name
 }
 
-function Helps.NewCommand
-(
+function Helps.NewCommand(
 	$Command,
 	[string]$Tab,
 	[string]$LocalizedData
-)
-{
+) {
 	# resolve
 	if ($Command -is [string]) {
 		$commands = @(Get-Command $Command -ErrorAction 0)
@@ -210,10 +168,10 @@ function Helps.NewCommand
 			0 {
 				$Name = $Command
 				$Command = $null
-				Write-Warning "Command is not found."
+				Write-Warning "Command '$Name' is not found."
 			}
 			default {
-				throw "There are $($commands.Count) commands."
+				Helps.Error "There are $($commands.Count) commands '$Command'."
 			}
 		}
 	}
@@ -405,13 +363,11 @@ function Helps.NewCommand
 	'}'
 }
 
-function Helps.NewProvider
-(
+function Helps.NewProvider(
 	$Provider,
 	[string]$Tab,
 	[string]$LocalizedData
-)
-{
+) {
 	# resolve
 	if ($Provider -is [string]) {
 		$providers = @(Get-PSProvider $Provider -ErrorAction 0)
@@ -423,10 +379,10 @@ function Helps.NewProvider
 			0 {
 				$Name = $Provider
 				$Provider = $null
-				Write-Warning "Provider is not found."
+				Write-Warning "Provider '$Name' is not found."
 			}
 			default {
-				throw "There are $($providers.Count) providers."
+				Helps.Error "There are $($providers.Count) providers '$Provider'."
 			}
 		}
 	}
@@ -563,18 +519,10 @@ function Helps.NewProvider
 	'}'
 }
 
-function Helps.Import
-(
-	[Parameter()]
-	[string[]]$Script
-	,
-	[Parameter()]
+function Helps.Import(
+	[string[]]$Script,
 	[hashtable]$Parameters = @{}
-	,
-	[Parameter()]
-	[switch]$Test
-)
-{
+) {
 	$validCommandKeys = @( ###
 		'command'
 		'synopsis'
@@ -603,30 +551,29 @@ function Helps.Import
 		'links'
 	)
 
-	foreach($_ in $Script) {
-		$path = Resolve-Path -LiteralPath $_
+	# resolve paths before invoking, scripts may change the location
+	$Script = foreach($_ in $Script) {
+		try { Resolve-Path -LiteralPath $_ }
+		catch { Helps.Error $_ 5 }
+	}
+
+	# invoke scripts, validate output
+	foreach($path in $Script) {
 		foreach($hash in (& $path @Parameters)) {
 			if ($hash -isnot [hashtable]) {
-				throw "$Script : Invalid help type. Expected : Hashtable. Actual : $($hash.GetType())."
+				Helps.Error "$Script : Help scripts output hashtables. Unexpected output is '$($hash.GetType())'."
 			}
-			if ($Test) {
-				if ($hash['command']) {
-					foreach($key in $hash.Keys) {
-						if ($validCommandKeys -notcontains $key) {
-							throw "Invalid help key : $key. Valid keys : $validCommandKeys."
-						}
-					}
-				}
-				elseif ($hash['provider']) {
-					foreach($key in $hash.Keys) {
-						if ($validProviderKeys -notcontains $key) {
-							throw "Invalid help key : $key. Valid keys : $validProviderKeys."
-						}
-					}
-				}
-				else {
-					throw "Expected either 'command' or 'provider' keys."
-				}
+			if ($name = $hash['command']) { foreach($key in $hash.Keys) { if ($validCommandKeys -notcontains $key) {
+				Helps.Error "$Script : Invalid key '$key' in command '$name'. Valid keys: $validCommandKeys."
+			}}}
+			elseif ($name = $hash['provider']) { foreach($key in $hash.Keys) { if ($validProviderKeys -notcontains $key) {
+				Helps.Error "$Script : Invalid key '$key' in provider '$name'. Valid keys: $validCommandKeys."
+			}}}
+			else {
+				Helps.Error "$Script : Help table must contain either 'command' or 'provider' key."
+			}
+			if (!$hash['synopsis']) {
+				Helps.Error "$Script : Help of '$name': Missing or empty 'synopsis'."
 			}
 			$hash
 		}
@@ -634,18 +581,7 @@ function Helps.Import
 }
 
 # Converts all topics to XML.
-function Helps.ConvertAll
-(
-	[Parameter(Mandatory = $true)]
-	[hashtable[]]$Topics
-	,
-	[Parameter(Mandatory = $true)]
-	[string]$Output
-)
-{
-	# to watch cmdlet or non-cmdlet, mixed help is not allowed
-	$1.CommandType = $null
-
+function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 	### sorting
 	$sortParameterInSyntax = @(
 		{ if ($_.Position -ge 0) { $_.Position } else { 999 } }
@@ -687,10 +623,10 @@ function Helps.ConvertAll
 		"</$Tag>"
 	}
 
-	function Out-Types($TagSet, $TagType, $Types) {
+	function Out-Types($HelpKey, $TagSet, $TagType, $Types) {
 		"<$TagSet>"
 		foreach($item in $Types) {
-			Test-Type $item
+			Test-Hash $item $HelpKey $validTypeKeys
 
 			"<$TagType>"
 
@@ -736,7 +672,7 @@ function Helps.ConvertAll
 
 		$exampleNumber = 0
 		foreach($example in $examples) {
-			Test-Example $example
+			Test-Hash $example examples $validExampleKeys
 
 			++$exampleNumber
 			"<$($tags.example)>"
@@ -807,7 +743,7 @@ function Helps.ConvertAll
 		"<$($tags.links)>"
 
 		foreach($link in $links) {
-			Test-Link $link
+			Test-Hash $link links $validLinkKeys
 
 			"<$($tags.link)>"
 
@@ -839,20 +775,22 @@ function Helps.ConvertAll
 		$ParameterSet.Parameters | Sort-Object $Sort | .{process{ if (Helps.IsParameter $_.Name) { $_ }}}
 	}
 
+	function Test-Hash($Hash, $HelpKey, $ValidKeys) {
+		if ($Hash -isnot [hashtable]) {
+			Helps.Error "Help of '$($1.Name)': '$HelpKey' must contain hashtables. Unexpected item is '$($Hash.GetType())'." 7
+		}
+		if (!$Hash.Count) {
+			Helps.Error "Help of '$($1.Name)': '$HelpKey' hashtables must not be empty." 7
+		}
+		foreach($key in $Hash.Keys) { if ($ValidKeys -notcontains $key) {
+			Helps.Error "Help of '$($1.Name)': Invalid '$HelpKey' hashtable key '$key'. Valid keys: $ValidKeys."
+		}}
+	}
+
 	$validTypeKeys = @(
 		'type'
 		'description'
 	)
-	function Test-Type($Hash) {
-		if ($Hash -isnot [hashtable]) {
-			throw "$($1.Name) : Invalid input/output type. Expected : Hashtable. Actual : $($Hash.GetType())."
-		}
-		foreach($key in $Hash.Keys) {
-			if ($validTypeKeys -notcontains $key) {
-				throw "$($1.Name) : Invalid input/output key : $key. Valid keys : $validTypeKeys."
-			}
-		}
-	}
 
 	$validExampleKeys = @(
 		'title'
@@ -861,47 +799,17 @@ function Helps.ConvertAll
 		'remarks'
 		'test'
 	)
-	function Test-Example($Hash) {
-		if ($Hash -isnot [hashtable]) {
-			throw "$($1.Name) : Invalid example type. Expected : Hashtable. Actual : $($Hash.GetType())."
-		}
-		foreach($key in $Hash.Keys) {
-			if ($validExampleKeys -notcontains $key) {
-				throw "$($1.Name) : Invalid example key : $key. Valid keys : $validExampleKeys."
-			}
-		}
-	}
 
 	$validLinkKeys = @(
 		'text'
 		'URI'
 	)
-	function Test-Link($Hash) {
-		if ($Hash -isnot [hashtable]) {
-			throw "$($1.Name) : Invalid link type. Expected : Hashtable. Actual : $($Hash.GetType())."
-		}
-		foreach($key in $Hash.Keys) {
-			if ($validLinkKeys -notcontains $key) {
-				throw "$($1.Name) : Invalid link key : $key. Valid keys : $validLinkKeys."
-			}
-		}
-	}
 
 	$validTaskKeys = @(
 		'title'
 		'description'
 		'examples'
 	)
-	function Test-Task($Hash) {
-		if ($Hash -isnot [hashtable]) {
-			throw "$($1.Name) : Invalid task type. Expected : Hashtable. Actual : $($Hash.GetType())."
-		}
-		foreach($key in $Hash.Keys) {
-			if ($validTaskKeys -notcontains $key) {
-				throw "$($1.Name) : Invalid task key : $key. Valid keys : $validTaskKeys."
-			}
-		}
-	}
 
 	$validParameterKeys = @(
 		'name'
@@ -910,31 +818,11 @@ function Helps.ConvertAll
 		'cmdlets'
 		'values'
 	)
-	function Test-Parameter($Hash) {
-		if ($Hash -isnot [hashtable]) {
-			throw "$($1.Name) : Invalid 'parameters' type. Expected : Hashtable. Actual : $($Hash.GetType())."
-		}
-		foreach($key in $Hash.Keys) {
-			if ($validParameterKeys -notcontains $key) {
-				throw "$($1.Name) : Invalid parameter key : $key. Valid keys : $validParameterKeys."
-			}
-		}
-	}
 
 	$validParameterValueKeys = @(
 		'value'
 		'description'
 	)
-	function Test-ParameterValue($Hash) {
-		if ($Hash -isnot [hashtable]) {
-			throw "$($1.Name) : Invalid parameter value type. Expected : Hashtable. Actual : $($Hash.GetType())."
-		}
-		foreach($key in $Hash.Keys) {
-			if ($validParameterValueKeys -notcontains $key) {
-				throw "$($1.Name) : Invalid parameter value key : $key. Valid keys : $validParameterValueKeys."
-			}
-		}
-	}
 
 	### output to the file
 	.{
@@ -943,15 +831,13 @@ function Helps.ConvertAll
 <helpItems xmlns="http://msh" schema="maml">
 '@
 
+		# ensured before: either command or provider
 		foreach($topic in $Topics) {
 			if ($topic['command']) {
 				Helps.ConvertCommand $topic
 			}
-			elseif ($topic['provider']) {
-				Helps.ConvertProvider $topic
-			}
 			else {
-				throw "Expected either 'command' or 'provider' keys."
+				Helps.ConvertProvider $topic
 			}
 		}
 
@@ -963,12 +849,7 @@ function Helps.ConvertAll
 }
 
 # Converts command help to XML.
-function Helps.ConvertCommand
-(
-	[Parameter(Mandatory = $true)]
-	$Help
-)
-{
+function Helps.ConvertCommand($Help) {
 	$1.Name = $Help.command
 	if ($1.Name -match '^(\w+)-(\w+)$') {
 		$verb = $matches[1]
@@ -979,20 +860,8 @@ function Helps.ConvertCommand
 		$noun = $null
 	}
 
-	$1.Command = Get-Command $1.Name
-
-	# check command type
-	if ($1.CommandType) {
-		if (($1.CommandType -eq 'Cmdlet') -and ($1.Command.CommandType -ne 'Cmdlet')) {
-			throw @'
-Function/cmdlet help cannot share a cmdlet/function help file:
-http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share-a-cmdlet-help-file.aspx
-'@
-		}
-	}
-	else {
-		$1.CommandType = $1.Command.CommandType
-	}
+	try { $1.Command = @(Get-Command $1.Name -ErrorAction Stop)[0] }
+	catch { Helps.Error $_ 13 }
 
 	### command
 	@'
@@ -1006,11 +875,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 	### synopsis
 
-	$synopsis = @($Help.synopsis)
-	if (!$synopsis) {
-		throw "$($1.Name) : Synopsis should not be empty."
-	}
-
+	$synopsis = @($Help['synopsis'])
 	Out-Text maml:description maml:para $synopsis
 
 	### copyright -- help does not show it
@@ -1039,7 +904,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 	$sets = $Help['sets']
 	if ($sets) {
 		if ($sets -isnot [Hashtable]) {
-			throw "$($1.Name) : Invalid 'sets' type. Expected : Hashtable. Actual : $($sets.GetType())."
+			Helps.Error "Help of '$($1.Name)': 'sets' must be hashtable, not '$($sets.GetType())'."
 		}
 		$sets = @{} + $sets
 		foreach($set in Get-ParameterSet) {
@@ -1059,7 +924,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 			}
 		}
 		if ($sets.Count) {
-			throw "$($1.Name) : Invalid parameter set names : $($sets.Keys)"
+			Helps.Error "Help of '$($1.Name)': 'sets' contains missing parameter set names: $($sets.Keys)."
 		}
 	}
 
@@ -1100,7 +965,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 	$parameters = $Help['parameters']
 	if ($parameters) {
 		if ($parameters -isnot [Hashtable]) {
-			throw "$($1.Name) : Invalid 'parameters' type. Expected : Hashtable. Actual : $($parameters.GetType())."
+			Helps.Error "Help of '$($1.Name)': 'parameters' must be hashtable, not '$($parameters.GetType())'."
 		}
 		$parameters = @{} + $parameters
 	}
@@ -1151,7 +1016,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 	}}
 
 	if ($parameters.Count) {
-		throw "$($1.Name) : Invalid parameter names : $($parameters.Keys)."
+		Helps.Error "Help of $($1.Name): 'parameters' contains missing parameter names: $($parameters.Keys)."
 	}
 
 	'</command:parameters>'
@@ -1160,17 +1025,17 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 	$inputs = $Help['inputs']
 	if ($null -eq $inputs) {
-		Write-Warning "$($1.Name) : Missing 'inputs' entry. If it is empty then set it to @()."
+		Write-Warning "Help of '$($1.Name)': Missing 'inputs' entry. If it is empty then set it to @()."
 	}
 	else {
 		$inputs = @($inputs)
 		if ($inputs.Count -eq 0) {
-			$inputs = , @{ type = 'None' }
+			$inputs = , @{ type = '-' }
 		}
 	}
 
 	if ($inputs) {
-		Out-Types command:inputTypes command:inputType $inputs
+		Out-Types inputs command:inputTypes command:inputType $inputs
 	}
 
 	### outputs - not yet supported type's uri, description
@@ -1179,17 +1044,17 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 
 	$outputs = $Help['outputs']
 	if ($null -eq $outputs) {
-		Write-Warning "$($1.Name) : Missing 'outputs' entry. If it is empty then set it to @()."
+		Write-Warning "Help of '$($1.Name)': Missing 'outputs' entry. If it is empty then set it to @()."
 	}
 	else {
 		$outputs = @($outputs)
 		if ($outputs.Count -eq 0) {
-			$outputs = , @{ type = 'None' }
+			$outputs = , @{ type = '-' }
 		}
 	}
 
 	if ($outputs) {
-		Out-Types command:returnValues command:returnValue $outputs
+		Out-Types outputs command:returnValues command:returnValue $outputs
 	}
 
 	### notes - not standard
@@ -1222,12 +1087,7 @@ http://blogs.msdn.com/b/powershell/archive/2009/07/09/function-help-cannot-share
 }
 
 # Converts provider help to XML.
-function Helps.ConvertProvider
-(
-	[Parameter(Mandatory = $true)]
-	$Help
-)
-{
+function Helps.ConvertProvider($Help) {
 	$1.Name = $Help.provider
 
 	### begin provider
@@ -1247,9 +1107,6 @@ function Helps.ConvertProvider
 	### synopsis
 
 	$synopsis = @($Help['synopsis'])
-	if (!$synopsis) {
-		throw "$($1.Name) : Synopsis should not be empty."
-	}
 	Out-Line Synopsis $synopsis
 
 	### description
@@ -1276,7 +1133,7 @@ function Helps.ConvertProvider
 		'<Tasks>'
 
 		foreach($task in $tasks) {
-			Test-Task $task
+			Test-Hash $task tasks $validTaskKeys
 
 			'<Task>'
 
@@ -1310,7 +1167,7 @@ function Helps.ConvertProvider
 		'<DynamicParameters>'
 
 		foreach($parameter in $parameters) {
-			Test-Parameter $parameter
+			Test-Hash $parameter parameters $validParameterKeys
 
 			'<DynamicParameter>'
 
@@ -1344,7 +1201,7 @@ function Helps.ConvertProvider
 				'<PossibleValues>'
 
 				foreach($value in $values) {
-					Test-ParameterValue $value
+					Test-Hash $value parameters.values $validParameterValueKeys
 
 					'<PossibleValue>'
 

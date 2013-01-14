@@ -22,14 +22,14 @@ This command checks for the latest available version, downloads, and unzips the
 package to a directory named *Helps.(version)*. The scripts and other files are
 located in its subdirectory *tools*.
 
-Copy *Helps.ps1* (and one of its help files *Helps.ps1-Help.xml*) to one of the
+Copy *Helps.ps1* (and one of its help files *Helps-Help.xml*) to one of the
 system path directories. Then the script can be dot-sourced from the command
 line or scripts just by name.
 
     . Helps.ps1
 
-Alternatively, *Helps.ps1* and *Helps.ps1-Help.xml* can be located anywhere,
-say, in *C:/Scripts/Helps*. Then the script is dot-sourced using its path.
+Alternatively, *Helps.ps1* and *Helps-Help.xml* can be located anywhere, say,
+in *C:/Scripts/Helps*. Then the script is dot-sourced using its path.
 
     . C:/Scripts/Helps/Helps.ps1
 
@@ -46,7 +46,7 @@ command line).
     . Helps.ps1
 
 **Step 4:** Create and save the template help script of *My-Command*, open the
-script in an editor and modify it (at least the synopsis should not be empty).
+script in an editor and modify it (e.g. the synopsis must not be empty).
 
     New-Helps -Command My-Command > MyModule.dll-Help.ps1
 
@@ -56,7 +56,7 @@ say, *en-US*.
 
     Convert-Helps MyModule.dll-Help.ps1 MyModule.dll-Help.xml
 
-That is it. In a new PowerShell session import the command's module or
+This is it. In a new PowerShell session import the command's module or
 dot-source the command's script and get the command help:
 
     Import MyModule
@@ -64,8 +64,8 @@ dot-source the command's script and get the command help:
 
 ## How To Get Help
 
-Make sure *Helps.ps1-Help.xml* is in the same directory where *Helps.ps1* is or
-in an appropriate subdirectory (like *en-US* or *ru-RU* in the package).
+Make sure *Helps-Help.xml* is in the same directory with *Helps.ps1* or in a
+culture resource subdirectory (like *en-US* or *ru-RU* in the package).
 
 For *Helps.ps1*. Assuming it is in the path:
 
