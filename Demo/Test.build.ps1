@@ -541,3 +541,59 @@ task ConvertMissingCommandParametersNames {
 		Convert-Helps z.ps1 z.xml
 	}
 }
+
+# PSBase is needed in $Command.Parameters.PSBase.Keys, see https://github.com/nightroman/Helps/issues/2
+function Test-ProblemParameterNames
+{
+	param(
+		[Parameter()]
+		$Comparer,
+		$Count,
+		$IsFixedSize,
+		$IsReadOnly,
+		$IsSynchronized,
+		$Keys,
+		$SyncRoot,
+		$Values
+	)
+	{ write-host "test" }
+}
+task ProblemParameterNames {
+	# generate help
+	$res = New-Helps -Command Test-ProblemParameterNames
+	assert ($res -match "\t\tComparer = ''")
+	assert ($res -match "\t\tCount = ''")
+	assert ($res -match "\t\tIsFixedSize = ''")
+	assert ($res -match "\t\tIsReadOnly = ''")
+	assert ($res -match "\t\tIsSynchronized = ''")
+	assert ($res -match "\t\tKeys = ''")
+	assert ($res -match "\t\tSyncRoot = ''")
+	assert ($res -match "\t\tValues = ''")
+
+	# "edit" and save help script
+	$res = $res -replace "synopsis = ''", "synopsis = 'synopsis'"
+	$res = $res -replace "Comparer = ''", "Comparer = '1'"
+	$res = $res -replace "Count = ''", "Count = '1'"
+	$res = $res -replace "IsFixedSize = ''", "IsFixedSize = '1'"
+	$res = $res -replace "IsReadOnly = ''", "IsReadOnly = '1'"
+	$res = $res -replace "IsSynchronized = ''", "IsSynchronized = '1'"
+	$res = $res -replace "Keys = ''", "Keys = '1'"
+	$res = $res -replace "SyncRoot = ''", "SyncRoot = '1'"
+	$res = $res -replace "Values = ''", "Values = '1'"
+	$res | Set-Content $env:TEMP\z.ps1 -Encoding UTF8
+
+	# convert and get the result XML
+	Convert-Helps $env:TEMP\z.ps1 $env:TEMP\z.ps1.xml
+	$res = [IO.File]::ReadAllText("$env:TEMP\z.ps1.xml")
+
+	assert ($res -match "<maml:name>Comparer</maml:name>")
+	assert ($res -match "<maml:name>Count</maml:name>")
+	assert ($res -match "<maml:name>IsFixedSize</maml:name>")
+	assert ($res -match "<maml:name>IsReadOnly</maml:name>")
+	assert ($res -match "<maml:name>IsSynchronized</maml:name>")
+	assert ($res -match "<maml:name>Keys</maml:name>")
+	assert ($res -match "<maml:name>SyncRoot</maml:name>")
+	assert ($res -match "<maml:name>Values</maml:name>")
+
+	Remove-Item -LiteralPath $env:TEMP\z.ps1, $env:TEMP\z.ps1.xml
+}

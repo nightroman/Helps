@@ -1,6 +1,10 @@
 Helps Release Notes
 ===================
 
+## v1.0.8
+
+Fixed [#2](https://github.com/nightroman/Helps/issues/2), added a test.
+
 ## v1.0.7
 
 Improved various errors thrown by the engine. Added tests covering some errors.

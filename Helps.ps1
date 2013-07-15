@@ -21,7 +21,7 @@ param()
 
 # The current version.
 function Get-HelpsVersion
-{[System.Version]'1.0.7'}
+{[System.Version]'1.0.8'}
 
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
@@ -147,7 +147,7 @@ function New-Helps(
 function Helps.Error($M, $C=0)
 {$PSCmdlet.ThrowTerminatingError((New-Object System.Management.Automation.ErrorRecord ([Exception]"$M"), $null, $C, $null))}
 
-# Filters out common parameters.
+# Filters out common parameters
 function Helps.IsParameter($Name) {
 	@('Verbose', 'Debug', 'ErrorAction', 'ErrorVariable', 'WarningAction', 'WarningVariable', 'OutVariable', 'OutBuffer') -notcontains $Name
 }
@@ -182,7 +182,7 @@ function Helps.NewCommand(
 	# info
 	if ($Command) {
 		$sets = @($Command.ParameterSets | Sort-Object Name)
-		$parameters = @($Command.Parameters.Keys | Sort-Object)
+		$parameters = @($Command.Parameters.PSBase.Keys | Sort-Object)
 		$outputs = @($Command.OutputType)
 	}
 	else {
