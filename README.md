@@ -13,46 +13,50 @@ easy. One of them is building localized help files.
 ## Quick Start
 
 **Step 1:**
-Helps is distributed as a NuGet package. An easy way to get and update it is
-[NuGet.exe Command Line](http://nuget.codeplex.com/releases):
+Helps is distributed as the NuGet package [Helps](https://www.nuget.org/packages/Helps).
+Download it to the current location as the directory *"Helps"* by this PowerShell command:
 
-    NuGet install Helps
+    Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.github.com/nightroman/Helps/master/Download.ps1')
 
-This command checks for the latest available version, downloads, and unzips the
-package to a directory named *Helps.(version)*. The scripts and other files are
-located in its subdirectory *tools*.
+Alternatively, download it by NuGet tools or [directly](http://nuget.org/api/v2/package/Helps).
+In the latter case rename the package to *".zip"* and unzip. Use the package
+subdirectory *"tools"*.
 
-Copy *Helps.ps1* (and one of its help files *Helps-Help.xml*) to one of the
-system path directories. Then the script can be dot-sourced from the command
-line or scripts just by name.
+Copy *Helps.ps1* and one of its help files *Helps-Help.xml* to a directory
+included in the system path. Then the script can be dot-sourced from the
+command line or scripts just by name:
 
     . Helps.ps1
 
 Alternatively, *Helps.ps1* and *Helps-Help.xml* can be located anywhere, say,
-in *C:/Scripts/Helps*. Then the script is dot-sourced using its path.
+in *C:/Scripts/Helps*. Then the script should be dot-sourced using its path:
 
     . C:/Scripts/Helps/Helps.ps1
 
-**Step 2:** Choose the command, for example *My-Command* cmdlet from
-*MyModule*, and make the command available, that is load the module. If
-*My-Command* is a script function then dot-source the script.
+**Step 2:**
+Choose the command, for example *My-Command* cmdlet from *MyModule*, and make
+the command available, that is import the module. If *My-Command* is a script
+function then dot-source the script.
 
     Import-Module MyModule
 
-**Step 3:** Dot-source the script *Helps.ps1*. This command loads its utility
-functions into the current scope (the global scope if it is called from the
-command line).
+**Step 3:**
+Dot-source the script *Helps.ps1*. This command loads its utility functions
+into the current scope, the global scope if it is called from the command
+line:
 
     . Helps.ps1
 
-**Step 4:** Create and save the template help script of *My-Command*, open the
-script in an editor and modify it (e.g. the synopsis must not be empty).
+**Step 4:**
+Create and save the template help script of *My-Command*, open the script in an
+editor and modify it (e.g. the synopsis must not be empty).
 
     New-Helps -Command My-Command > MyModule.dll-Help.ps1
 
-**Step 5:** Build the XML help *Module.dll-Help.xml* from the help script. Copy
-the result to the module/script directory or a culture resource subdirectory,
-say, *en-US*.
+**Step 5:**
+Build the XML help *Module.dll-Help.xml* from the help script. Copy the result
+to the module/script directory or a culture resource subdirectory, say,
+*en-US*.
 
     Convert-Helps MyModule.dll-Help.ps1 MyModule.dll-Help.xml
 
