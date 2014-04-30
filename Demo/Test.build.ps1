@@ -513,7 +513,7 @@ task ConvertMissingSetsNames {
 	sets = @{bad1=''; bad2=''}
 }
 '@ > z.ps1
-	Test-Error "Convert-Helps : Help of 'Helps': 'sets' contains missing parameter set names: bad1 bad2.*At *\Test.build.ps1:*" {
+	Test-Error "Convert-Helps : Help of 'Helps': 'sets' contains missing parameter set names: bad? bad?.*At *\Test.build.ps1:*" {
 		Convert-Helps z.ps1 z.xml
 	}
 }
@@ -537,7 +537,7 @@ task ConvertMissingCommandParametersNames {
 	parameters = @{bad1=''; bad2=''}
 }
 '@ > z.ps1
-	Test-Error "Convert-Helps : Help of Helps: 'parameters' contains missing parameter names: bad1 bad2.*At *\Test.build.ps1:*" {
+	Test-Error "Convert-Helps : Help of Helps: 'parameters' contains missing parameter names: bad? bad?.*At *\Test.build.ps1:*" {
 		Convert-Helps z.ps1 z.xml
 	}
 }

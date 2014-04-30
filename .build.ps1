@@ -4,11 +4,11 @@
 	Build script (https://github.com/nightroman/Invoke-Build)
 #>
 
-param
-(
+param(
 	$Culture = 'en-US'
 )
-Set-StrictMode -Version 2
+
+Set-StrictMode -Version Latest
 
 # Working script is located in the path, get its full path.
 $ScriptFile = (Get-Command Helps.ps1).Definition
@@ -26,7 +26,7 @@ task Clean RemoveMarkdownHtml, {
 # Set $script:Version
 task Version {
 	. Helps
-	$script:Version = Get-HelpsVersion
+	($script:Version = Get-HelpsVersion)
 }
 
 # Copy Helps.ps1 from its working location to the project.
@@ -144,6 +144,7 @@ and functions in scripts or modules.
 		<summary>$text</summary>
 		<description>$text</description>
 		<tags>powershell help builder</tags>
+		<releaseNotes>https://github.com/nightroman/Helps/blob/master/Release-Notes.md</releaseNotes>
 	</metadata>
 </package>
 "@

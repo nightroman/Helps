@@ -1,7 +1,7 @@
 
 <#
 * Helps.ps1 - PowerShell Help Builder
-* Copyright (c) 2011-2013 Roman Kuzmin
+* Copyright (c) 2011-2014 Roman Kuzmin
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@
 param()
 
 # The current version.
-function Get-HelpsVersion
-{[System.Version]'1.0.8'}
+function Get-HelpsVersion {[System.Version]'1.0.9'}
 
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
-	[Parameter(Position=0, Mandatory=1)][ValidateNotNullOrEmpty()][string[]]$Script,
-	[Parameter(Position=1, Mandatory=1)][string]$Output,
-	[Parameter(Position=2)][hashtable]$Parameters=@{}
+	[Parameter(Mandatory=1)][ValidateNotNullOrEmpty()][string[]]$Script,
+	[Parameter(Mandatory=1)][string]$Output,
+	[hashtable]$Parameters=@{}
 ) {
 	$ErrorActionPreference = 'Stop'
 	# resolve output now, script may change the location
@@ -40,8 +39,8 @@ function Convert-Helps(
 
 #.ExternalHelp Helps-Help.xml
 function Merge-Helps(
-	[Parameter(Position=0, Mandatory=1)][ValidateNotNull()][hashtable]$First,
-	[Parameter(Position=1, Mandatory=1)][ValidateNotNull()][hashtable]$Second
+	[Parameter(Mandatory=1)][ValidateNotNull()][hashtable]$First,
+	[Parameter(Mandatory=1)][ValidateNotNull()][hashtable]$Second
 ) {
 	# copy the first table
 	$First = @{} + $First
@@ -149,7 +148,17 @@ function Helps.Error($M, $C=0)
 
 # Filters out common parameters
 function Helps.IsParameter($Name) {
-	@('Verbose', 'Debug', 'ErrorAction', 'ErrorVariable', 'WarningAction', 'WarningVariable', 'OutVariable', 'OutBuffer') -notcontains $Name
+	@(
+		'Verbose',
+		'Debug',
+		'ErrorAction',
+		'ErrorVariable',
+		'WarningAction',
+		'WarningVariable',
+		'OutVariable',
+		'OutBuffer',
+		'PipelineVariable'
+	) -notcontains $Name
 }
 
 function Helps.NewCommand(

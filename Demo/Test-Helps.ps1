@@ -17,7 +17,7 @@ $ErrorActionPreference = 'Stop'
 
 if (!(Test-Path Test-Helps.ps1)) { throw 'Run me from my location.' }
 $log = 'Helps-Test.log'
-$expected = "$env:LOCALAPPDATA\Helps-Test.$($PSVersionTable.PSVersion.Major).txt"
+$sample = "$HOME\data\Helps-Test.$($PSVersionTable.PSVersion.Major).txt"
 
 # load the script
 . Helps.ps1
@@ -26,11 +26,9 @@ $expected = "$env:LOCALAPPDATA\Helps-Test.$($PSVersionTable.PSVersion.Major).txt
 function global:Test-Function1
 (
 	[Parameter(Mandatory = $true, ParameterSetName = 'Set1')]
-	[string]$Param1
-	,
+	[string]$Param1,
 	[Parameter(Mandatory = $true, ParameterSetName = 'Set2')]
-	[string]$Param2
-	,
+	[string]$Param2,
 	[Parameter()]
 	[string]$Param3
 )
@@ -78,32 +76,8 @@ Test-Helps TestProvider.dll-Help.ps1
 	New-Helps -Provider FILESYSTEM -LocalizedData data
 } | Out-File -Width 80 $log -Append
 
-### compare actual with expected
-$toCopy = $false
-if (Test-Path $expected) {
-	$new = (Get-Content $log) -join "`n"
-	$val = (Get-Content $expected) -join "`n"
-	if ($new -ceq $val) {
-		'The result is expected.'
-		Remove-Item $log
-	}
-	else {
-		Write-Warning 'The result is not the same as expected.'
-		if ($env:MERGE) {
-			& $env:MERGE $log $expected
-		}
-		$toCopy = 1 -eq (Read-Host 'Save the result as expected? [1] Yes [Enter] No')
-	}
-}
-else {
-	$toCopy = $true
-}
-
-### copy actual to expected
-if ($toCopy) {
-	Write-Host -ForegroundColor Cyan 'Saving the result as expected.'
-	Move-Item $log $expected -Force
-}
+### compare sample
+Assert-SameFile $sample $log $env:MERGE
 
 ### remove XML files, see the result help in Helps-Test.txt
 Remove-Item Test-Helps-Help.xml, TestProvider.dll-Help.xml

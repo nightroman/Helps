@@ -1,5 +1,10 @@
+
 Helps Release Notes
 ===================
+
+## v1.0.9  - PS v4.0 upgrade
+
+Adjusted for the new common parameter *PipelineVariable*.
 
 ## v1.0.8
 
