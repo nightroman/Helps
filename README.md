@@ -1,5 +1,5 @@
 
-# Helps.ps1 - PowerShell Help Builder
+# PowerShell Help Builder
 
 Helps.ps1 provides functions for building PowerShell XML help files from help
 scripts and for creating help script templates for existing objects. Help can

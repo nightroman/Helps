@@ -216,3 +216,11 @@ Joined second long line in a new paragraph.
 	examples = @{ code = '<code>Just one example<code>' }
 	links = @{ text = '<text>Just one link<text>' }
 }
+
+@{
+	command = 'Test-FunctionDynamicParam' ###
+	synopsis = 'Test-FunctionDynamicParam'
+	parameters = @{
+		Param1 = 'Param1'
+	}
+}

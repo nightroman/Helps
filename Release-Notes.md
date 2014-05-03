@@ -2,7 +2,21 @@
 Helps Release Notes
 ===================
 
-## v1.0.9  - PS v4.0 upgrade
+## v1.1.0 - Ignore dynamic parameters
+
+Dynamic parameters, if any, are ignored as if they do not exist. They may be
+documented in the description, for example in a manually added text section
+DYNAMIC PARAMETERS.
+
+Otherwise, depending on a command, there are too many issues. Some commands do
+not even know what names their dynamic parameters may have. They may depend on
+a yet unknown context and the current context on building the help may produce
+some unwanted dynamic parameters.
+
+Excluded the directory *Demo* from the package, as not really relevant. It can
+be found at the project site and downloaded with other source files, if needed.
+
+## v1.0.9 - PS v4.0 upgrade
 
 Adjusted for the new common parameter *PipelineVariable*.
 

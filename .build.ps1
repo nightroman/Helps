@@ -105,15 +105,6 @@ task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
 	)
 	Copy-Item -Destination z\tools\en-US 'en-US\Helps-Help.xml'
 	Copy-Item -Destination z\tools\ru-RU 'ru-RU\Helps-Help.xml'
-	Copy-Item -Destination z\tools\Demo @(
-		'Demo\Helps-Help.ps1'
-		'Demo\Test-Helps.ps1'
-		'Demo\Test-Helps-Help.ps1'
-		'Demo\TestProvider.dll-Help.ps1'
-		'Demo\TestProvider.cs'
-	)
-	Copy-Item -Destination z\tools\Demo\en-US 'Demo\en-US\Helps-Help.psd1'
-	Copy-Item -Destination z\tools\Demo\ru-RU 'Demo\ru-RU\Helps-Help.psd1'
 
 	# move generated files
 	Move-Item -Destination z\tools @(

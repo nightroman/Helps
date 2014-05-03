@@ -20,7 +20,7 @@
 param()
 
 # The current version.
-function Get-HelpsVersion {[System.Version]'1.0.9'}
+function Get-HelpsVersion {[System.Version]'1.1.0'}
 
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
@@ -777,7 +777,7 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 
 	function Get-CommandParameter($Command, $Sort) {
 		$Command.ParameterSets | .{process{ $_.Parameters }} |
-		Sort-Object $Sort -Unique | .{process{ if (Helps.IsParameter $_.Name) { $_ }}}
+		Sort-Object $Sort -Unique | .{process{ if ((Helps.IsParameter $_.Name) -and !$_.IsDynamic) { $_ }}}
 	}
 
 	function Get-ParameterSetParameter($ParameterSet, $Sort) {
@@ -946,7 +946,7 @@ function Helps.ConvertCommand($Help) {
 	foreach($set in Get-ParameterSet) {
 		'<command:syntaxItem>'
 		"<maml:name>$($1.Name)</maml:name>"
-		$set.Parameters | Sort-Object $sortParameterInSyntax | .{process{ if (Helps.IsParameter $_.Name) {
+		$set.Parameters | Sort-Object $sortParameterInSyntax | .{process{ if ((Helps.IsParameter $_.Name) -and !$_.IsDynamic) {
 			$start = '<command:parameter '
 
 			# required, position, pipelineInput is not needed

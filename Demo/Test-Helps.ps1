@@ -7,16 +7,16 @@
 	This script should be invoked from its home directory.
 
 .Outputs
-	* The result help is normally saved as %TEMP%\Helps-Test.txt.
-	* Helps-Test.log is new help file which different from the old.
+	* $HOME\data\Helps-Test.V.txt - sample files for v2 and v3.
+	* $HOME\data\Helps-Test.new.txt - temp log, removed if not stopped.
 	* TestProvider.dll is created for the dummy TestProvider being tested.
 #>
 
-Set-StrictMode -Version 2
+Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 
 if (!(Test-Path Test-Helps.ps1)) { throw 'Run me from my location.' }
-$log = 'Helps-Test.log'
+$log = "$HOME\data\Helps-Test.new.txt"
 $sample = "$HOME\data\Helps-Test.$($PSVersionTable.PSVersion.Major).txt"
 
 # load the script
@@ -37,6 +37,26 @@ function global:Test-Function1
 #.ExternalHelp Test-Helps-Help.xml
 function global:Test-Function2
 {}
+
+#.ExternalHelp Test-Helps-Help.xml
+function Test-FunctionDynamicParam
+(
+	[Parameter()]
+	[string]$Param1
+)
+{
+	dynamicparam {
+		$param = New-Object Management.Automation.RuntimeDefinedParameterDictionary
+		$attrs = New-Object Collections.ObjectModel.Collection[Attribute]
+		$a1 = New-Object Management.Automation.ParameterAttribute
+		$attrs.Add($a1)
+		$name = 'DynamicParam1'
+		$param.Add($name, (New-Object Management.Automation.RuntimeDefinedParameter $name, ([object]), $attrs))
+		$param
+	}
+	end {
+	}
+}
 
 ### build/test command help
 Convert-Helps Test-Helps-Help.ps1 Test-Helps-Help.xml
@@ -62,6 +82,7 @@ Test-Helps TestProvider.dll-Help.ps1
 	'Test-Helps'
 	'Test-Function1'
 	'Test-Function2'
+	'Test-FunctionDynamicParam'
 	'TestProvider'
 ) | %{
 	'#'*77
@@ -78,6 +99,7 @@ Test-Helps TestProvider.dll-Help.ps1
 
 ### compare sample
 Assert-SameFile $sample $log $env:MERGE
+Remove-Item $log
 
 ### remove XML files, see the result help in Helps-Test.txt
 Remove-Item Test-Helps-Help.xml, TestProvider.dll-Help.xml
