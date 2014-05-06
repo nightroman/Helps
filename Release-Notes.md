@@ -2,7 +2,17 @@
 Helps Release Notes
 ===================
 
-## v1.1.0 - Ignore dynamic parameters
+## v1.1.1
+
+**Ignore empty inputs/outputs**
+
+`Convert-Helps` does not write warnings on missing inputs and outputs. Also, it
+does not generate "-" if they are empty, this results in extra empty lines, not
+always wanted. Some developers may prefer to have these sections with no text.
+
+## v1.1.0
+
+**Ignore dynamic parameters**
 
 Dynamic parameters, if any, are ignored as if they do not exist. They may be
 documented in the description, for example in a manually added text section
@@ -16,7 +26,9 @@ some unwanted dynamic parameters.
 Excluded the directory *Demo* from the package, as not really relevant. It can
 be found at the project site and downloaded with other source files, if needed.
 
-## v1.0.9 - PS v4.0 upgrade
+## v1.0.9
+
+**PS v4.0 upgrade**
 
 Adjusted for the new common parameter *PipelineVariable*.
 

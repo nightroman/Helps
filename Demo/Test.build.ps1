@@ -230,32 +230,16 @@ task ConvertBadInputs {
 	}
 }
 
-task ConvertMissingInputsAndBadOutputs {
+task ConvertBadOutputs {
 	@'
 @{
 	command = 'Helps'; synopsis = '...'
 	outputs = 'bad'
 }
 '@ > z.ps1
-	$nWarning = ${*}.Warnings.Count
 	Test-Error "Convert-Helps : Help of 'Helps': 'outputs' must contain hashtables. Unexpected item is 'string'.*At *\Test.build.ps1:*" {
 		Convert-Helps z.ps1 z.xml
 	}
-	assert (${*}.Warnings.Count -eq $nWarning + 1)
-	assert (${*}.Warnings[$nWarning] -eq "WARNING: Help of 'Helps': Missing 'inputs' entry. If it is empty then set it to @().")
-}
-
-task ConvertMissingOutputs {
-	@'
-@{
-	command = 'Helps'; synopsis = '...';
-	inputs = @()
-}
-'@ > z.ps1
-	$nWarning = ${*}.Warnings.Count
-	Convert-Helps z.ps1 z.xml
-	assert (${*}.Warnings.Count -eq $nWarning + 1)
-	assert (${*}.Warnings[$nWarning] -eq "WARNING: Help of 'Helps': Missing 'outputs' entry. If it is empty then set it to @().")
 }
 
 task ConvertEmptyInputsHashtable {

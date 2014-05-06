@@ -20,7 +20,7 @@
 param()
 
 # The current version.
-function Get-HelpsVersion {[System.Version]'1.1.0'}
+function Get-HelpsVersion {[System.Version]'1.1.1'}
 
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
@@ -1032,37 +1032,15 @@ function Helps.ConvertCommand($Help) {
 
 	### inputs - not yet supported type's uri, description
 
-	$inputs = $Help['inputs']
-	if ($null -eq $inputs) {
-		Write-Warning "Help of '$($1.Name)': Missing 'inputs' entry. If it is empty then set it to @()."
-	}
-	else {
+	if ($inputs = $Help['inputs']) {
 		$inputs = @($inputs)
-		if ($inputs.Count -eq 0) {
-			$inputs = , @{ type = '-' }
-		}
-	}
-
-	if ($inputs) {
 		Out-Types inputs command:inputTypes command:inputType $inputs
 	}
 
 	### outputs - not yet supported type's uri, description
 
-	$outputs = $Help['outputs']
-
-	$outputs = $Help['outputs']
-	if ($null -eq $outputs) {
-		Write-Warning "Help of '$($1.Name)': Missing 'outputs' entry. If it is empty then set it to @()."
-	}
-	else {
+	if ($outputs = $Help['outputs']) {
 		$outputs = @($outputs)
-		if ($outputs.Count -eq 0) {
-			$outputs = , @{ type = '-' }
-		}
-	}
-
-	if ($outputs) {
 		Out-Types outputs command:returnValues command:returnValue $outputs
 	}
 
