@@ -18,18 +18,18 @@ $ScriptRoot = Split-Path $ScriptFile
 # <https://github.com/nightroman/Invoke-Build/wiki/Partial-Incremental-Tasks>
 Markdown.tasks.ps1
 
-# Remove temp files
+# Synopsis: Remove temp files
 task Clean RemoveMarkdownHtml, {
 	Remove-Item z, z.ps1, en-US, ru-RU, Helps.*.nupkg -Force -Recurse -ErrorAction 0
 }
 
-# Set $script:Version
+# Synopsis: Set $script:Version
 task Version {
 	. Helps
 	($script:Version = Get-HelpsVersion)
 }
 
-# Copy Helps.ps1 from its working location to the project.
+# Synopsis: Copy Helps.ps1 from its working location to the project.
 task UpdateScript {
 	$target = Get-Item Helps.ps1 -ErrorAction 0
 	$source = Get-Item $ScriptFile
@@ -37,7 +37,7 @@ task UpdateScript {
 	Copy-Item $ScriptFile .
 }
 
-# Calls Demo\Test-Helps.ps1
+# Synopsis: Calls Demo\Test-Helps.ps1
 task Test UpdateScript, HelpEn, HelpRu, {
 	Set-Location Demo
 
@@ -50,7 +50,7 @@ task Test UpdateScript, HelpEn, HelpRu, {
 },
 Clean
 
-# Build and test en-US help
+# Synopsis: Build and test en-US help
 task HelpEn {
 	$null = mkdir en-US -Force
 
@@ -63,7 +63,7 @@ task HelpEn {
 	Test-Helps Helps-Help.ps1
 }
 
-# Build and test ru-RU help
+# Synopsis: Build and test ru-RU help
 task HelpRu {
 	$null = mkdir ru-RU -Force
 
@@ -74,7 +74,7 @@ task HelpRu {
 	Test-Helps Helps-Help.ps1
 }
 
-# View help using the $Culture
+# Synopsis: View help using the $Culture
 task View {
 	$file = "$env:TEMP\help.txt"
 	[System.Threading.Thread]::CurrentThread.CurrentUICulture = $Culture
@@ -92,7 +92,7 @@ task View {
 	notepad $file
 }
 
-# Make the package in z\tools for NuGet
+# Synopsis: Make the package in z\tools for NuGet
 task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
 	# package directories
 	Remove-Item [z] -Force -Recurse
@@ -113,7 +113,7 @@ task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
 	)
 }
 
-# Make the NuGet package
+# Synopsis: Make the NuGet package
 task NuGet Package, Version, {
 	$text = @'
 Helps.ps1 provides functions for building PowerShell XML help files from help
@@ -143,5 +143,5 @@ and functions in scripts or modules.
 	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 }
 
-# Build help files, run tests.
+# Synopsis: Build help files, run tests.
 task . Test
