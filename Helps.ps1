@@ -20,7 +20,7 @@
 param()
 
 # The current version.
-function Get-HelpsVersion {[System.Version]'1.1.1'}
+function Get-HelpsVersion {[System.Version]'1.1.2'}
 
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
@@ -1009,15 +1009,33 @@ function Helps.ConvertCommand($Help) {
 
 		"<maml:name>$($_.Name)</maml:name>"
 
-		$parameterDescription = @($parameters[$_.Name])
+		# info is string or hashtable
+		$defaultValue = $null
+		if (($parameterInfo = $parameters[$_.Name]) -is [hashtable]) {
+			$defaultValue = $parameterInfo['default']
+			$parameterDescription = @($parameterInfo['description'])
+		}
+		else {
+			$parameterDescription = @($parameterInfo)
+		}
+
+		# warning
 		if (!$parameterDescription) {
 			Write-Warning "$($1.Name) : missing parameter description : $($_.Name)"
 		}
+
+		# add enum values
 		if ($_.ParameterType.IsEnum) {
 			$parameterDescription += 'Values : ' + ([Enum]::GetValues($_.ParameterType) -join ', ')
 		}
 
+		# out description
 		Out-Text maml:description maml:para $parameterDescription
+
+		# out default value
+		if ($defaultValue) {
+			Out-Line dev:defaultValue $defaultValue
+		}
 
 		'</command:parameter>'
 

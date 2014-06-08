@@ -12,14 +12,11 @@ function Enter-Build {
 }
 
 function Exit-Build {
-	if (Test-Path z.ps1) {Remove-Item z.ps1}
-	if (Test-Path z.xml) {Remove-Item z.xml}
+	Remove-Item z.*
 }
 
 function Test-Error([string]$Expected, [scriptblock]$Script) {
-	$err = ''
-	try { & $Script }
-	catch { $err = $_ | Out-String }
+	$err = try { & $Script } catch { $_ | Out-String }
 	Write-Build Magenta $err
 	assert ($err -like $Expected)
 }
@@ -29,6 +26,7 @@ task ConvertMissingScript {
 		Convert-Helps Missing.ps1 z.xml
 	}
 }
+
 task TestMissingScript {
 	Test-Error "Test-Helps : Cannot find path 'Missing.ps1' because it does not exist.*At *\Test.build.ps1:*" {
 		Test-Helps Missing.ps1
@@ -63,6 +61,7 @@ task ConvertBadCommand {
 		Convert-Helps z.ps1 z.xml
 	}
 }
+
 task TestBadCommand {
 	@'
 @{
@@ -86,6 +85,7 @@ task ConvertBadProvider {
 		Convert-Helps z.ps1 z.xml
 	}
 }
+
 task TestBadProvider {
 	@'
 @{
@@ -105,6 +105,7 @@ task ConvertNoMainKey {
 		Convert-Helps z.ps1 z.xml
 	}
 }
+
 task TestNoMainKey {
 	'@{}' > z.ps1
 
@@ -118,6 +119,7 @@ task MergeNullFirst {
 		Merge-Helps $null @{}
 	}
 }
+
 task MergeNullSecond {
 	Test-Error "Merge-Helps : Cannot validate argument on parameter 'Second'. The argument is null.*At *\Test.build.ps1:*" {
 		Merge-Helps @{} $null
@@ -130,6 +132,7 @@ task MergeBadParametersFirst {
 		Merge-Helps $help @{ parameters = @{} }
 	}
 }
+
 task MergeBadParametersSecond {
 	Test-Error "Merge-Helps : Second: 'parameters' must be hashtable.*At *\Test.build.ps1:*" {
 		$help = @{ parameters = @{} }

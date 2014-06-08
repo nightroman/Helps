@@ -2,6 +2,19 @@
 Helps Release Notes
 ===================
 
+## v1.1.2
+
+Added support for default parameter values. Example:
+
+    # just description
+    Param1 = 'Description 1.'
+
+    # with default value
+    Param2 = @{
+        default = 'Default value 2.'
+        description = 'Description 2.'
+    }
+
 ## v1.1.1
 
 **Ignore empty inputs/outputs**

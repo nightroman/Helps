@@ -29,8 +29,8 @@ function global:Test-Function1
 	[string]$Param1,
 	[Parameter(Mandatory = $true, ParameterSetName = 'Set2')]
 	[string]$Param2,
-	[Parameter()]
-	[string]$Param3
+	[string]$Param3,
+	[string]$Param4
 )
 {}
 

@@ -55,11 +55,11 @@ task HelpEn {
 	$null = mkdir en-US -Force
 
 	. Helps.ps1
-	Convert-Helps Demo\Helps-Help.ps1 .\en-US\Helps-Help.xml @{ UICulture = 'en-US' }
+	Convert-Helps Help\Helps-Help.ps1 .\en-US\Helps-Help.xml @{ UICulture = 'en-US' }
 
 	Copy-Item .\en-US\Helps-Help.xml $ScriptRoot\Helps-Help.xml
 
-	Set-Location Demo
+	Set-Location Help
 	Test-Helps Helps-Help.ps1
 }
 
@@ -68,9 +68,9 @@ task HelpRu {
 	$null = mkdir ru-RU -Force
 
 	. Helps.ps1
-	Convert-Helps Demo\Helps-Help.ps1 .\ru-RU\Helps-Help.xml @{ UICulture = 'ru-RU' }
+	Convert-Helps Help\Helps-Help.ps1 .\ru-RU\Helps-Help.xml @{ UICulture = 'ru-RU' }
 
-	Set-Location Demo
+	Set-Location Help
 	Test-Helps Helps-Help.ps1
 }
 
@@ -96,7 +96,7 @@ task View {
 task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
 	# package directories
 	Remove-Item [z] -Force -Recurse
-	$null = mkdir z\tools\en-US, z\tools\ru-RU, z\tools\Demo\en-US, z\tools\Demo\ru-RU
+	$null = mkdir z\tools\en-US, z\tools\ru-RU
 
 	# copy project files
 	Copy-Item -Destination z\tools @(

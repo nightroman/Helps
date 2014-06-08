@@ -28,7 +28,7 @@ param
 	$UICulture = 'en-US'
 )
 
-Set-StrictMode -Version 2
+Set-StrictMode -Version Latest
 Import-LocalizedData -BindingVariable data -UICulture $UICulture
 
 ### Base help to be inherited by all commands
@@ -130,7 +130,7 @@ Merge-Helps $AnyHelp @{
 	parameters = @{
 		Command = $data.NewHelpsParametersCommand
 		Provider = $data.NewHelpsParametersProvider
-		Indent = $data.NewHelpsParametersIndent
+		Indent = @{default = '"`t"'; description = $data.NewHelpsParametersIndent}
 		LocalizedData = $data.NewHelpsParametersLocalizedData
 	}
 	outputs = @(

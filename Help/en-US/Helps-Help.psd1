@@ -49,7 +49,13 @@
 		Keys are parameter set names, values are remarks.
 
 	parameters
-		Keys are parameter names, values are remarks.
+		Keys are parameter names, values are remarks or hashtables.
+		Example:
+			Param1 = 'Description 1.'
+			Param2 = @{
+				default = 'Default value 2.'
+				description = 'Description 2.'
+			}
 
 	examples ... title
 		The default is generated as --- EXAMPLE N ---.
@@ -133,7 +139,7 @@ its values, and outputs the result source code.
 	NewHelpsSetsProvider = 'Creates a help script for a provider.'
 	NewHelpsParametersCommand = 'The command name or object to create a help script for.'
 	NewHelpsParametersProvider = 'The provider name or object to create a help script for.'
-	NewHelpsParametersIndent = 'The string used for code indentation. The default is "`t".'
+	NewHelpsParametersIndent = 'The string used for code indentation.'
 	NewHelpsParametersLocalizedData = @'
 Tells to create the code with references to localized data and provides the
 name of localized data variable. The initial localized data structure

@@ -63,6 +63,10 @@ text text text text text text text text text text
 		more
 			text.
 '@
+		Param4 = @{
+			description = 'Parameter 4.'
+			default = 'Default 4.'
+		}
 	}
 	inputs = @(
 		@{
