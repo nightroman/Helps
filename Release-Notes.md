@@ -2,6 +2,10 @@
 Helps Release Notes
 ===================
 
+## v1.1.3
+
+Resolved #4 (*wildcard* in parameter info).
+
 ## v1.1.2
 
 Added support for default parameter values. Example:

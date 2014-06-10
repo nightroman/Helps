@@ -53,8 +53,9 @@
 		Example:
 			Param1 = 'Description 1.'
 			Param2 = @{
+				description = 'Description of parameter 2.'
 				default = 'Default value 2.'
-				description = 'Description 2.'
+				wildcard = $true
 			}
 
 	examples ... title
@@ -79,15 +80,15 @@
 	examples
 		introduction and code are not joined as they are for commands.
 
-	EXAMPLES
+	EXAMPLES (REPOSITORY)
 
-	Demo\Helps-Help.ps1
+	Help\Helps-Help.ps1
 		The help script for Helps.ps1 and its functions.
 
-	Demo\Test-Helps-Help.ps1
+	Test\Test-Helps-Help.ps1
 		Exhaustive example of command help sources.
 
-	Demo\TestProvider.dll-Help.ps1
+	Test\TestProvider.dll-Help.ps1
 		Exhaustive example of provides help sources.
 '@
 

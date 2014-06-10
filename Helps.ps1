@@ -20,7 +20,7 @@
 param()
 
 # The current version.
-function Get-HelpsVersion {[System.Version]'1.1.2'}
+function Get-HelpsVersion {[System.Version]'1.1.3'}
 
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
@@ -985,6 +985,24 @@ function Helps.ConvertCommand($Help) {
 	'<command:parameters>'
 
 	Get-CommandParameter $1.Command { if ($_.Position -ge 0) { $_.Position } else { 999 } }, Name | .{process{
+		# info is hashtable or strings
+		if (($parameterInfo = $parameters[$_.Name]) -is [hashtable]) {
+			$wildcard = $parameterInfo['wildcard']
+			$defaultValue = $parameterInfo['default']
+			$parameterDescription = @($parameterInfo['description'])
+		}
+		else {
+			$wildcard = $null
+			$defaultValue = $null
+			$parameterDescription = @($parameterInfo)
+		}
+
+		# warning
+		if (!$parameterDescription) {
+			Write-Warning "$($1.Name) : missing parameter description : $($_.Name)"
+		}
+
+		# collector of start output
 		$start = '<command:parameter '
 
 		# required
@@ -1002,27 +1020,22 @@ function Helps.ConvertCommand($Help) {
 		}
 
 		# position
-		if ($_.Position -ge 0) { $start += 'position="' + ($_.Position + 1) + '" ' } else { $start += 'position="named" ' }
-
-		$start += '>'
-		$start
-
-		"<maml:name>$($_.Name)</maml:name>"
-
-		# info is string or hashtable
-		$defaultValue = $null
-		if (($parameterInfo = $parameters[$_.Name]) -is [hashtable]) {
-			$defaultValue = $parameterInfo['default']
-			$parameterDescription = @($parameterInfo['description'])
+		if ($_.Position -ge 0) {
+			$start += 'position="' + ($_.Position + 1) + '" '
 		}
 		else {
-			$parameterDescription = @($parameterInfo)
+			$start += 'position="named" '
 		}
 
-		# warning
-		if (!$parameterDescription) {
-			Write-Warning "$($1.Name) : missing parameter description : $($_.Name)"
+		# wildcard
+		if ($null -ne $wildcard) {
+			$start += 'globbing="{0}" ' -f $(if ($wildcard) {'true'} else {'false'})
 		}
+
+		# out start
+		"$start>"
+
+		"<maml:name>$($_.Name)</maml:name>"
 
 		# add enum values
 		if ($_.ParameterType.IsEnum) {

@@ -55,8 +55,9 @@
 		Пример:
 			Param1 = 'Описание 1.'
 			Param2 = @{
+				description = 'Описание параметра 2.'
 				default = 'Значение по умолчанию 2.'
-				description = 'Описание 2.'
+				wildcard = $true
 			}
 
 	examples ... title
@@ -81,16 +82,16 @@
 	examples
 		introduction и code не сливаются вместе, как у команд.
 
-	ПРИМЕРЫ
+	ПРИМЕРЫ В РЕПОЗИТОРИИ
 
-	Demo\Helps-Help.ps1
+	Help\Helps-Help.ps1
 		Исходник помощи для Helps.ps1 и его функций.
 
-	Demo\Test-Helps-Help.ps1
-		Исчерпывающий пример/тест исходника помощи для команд.
+	Test\Test-Helps-Help.ps1
+		Исчерпывающий пример-тест исходника помощи для команд.
 
-	Demo\TestProvider.dll-Help.ps1
-		Исчерпывающий пример/тест исходника помощи для провайдеров.
+	Test\TestProvider.dll-Help.ps1
+		Исчерпывающий пример-тест исходника помощи для провайдеров.
 '@
 
 	### Convert-Helps

@@ -66,6 +66,7 @@ text text text text text text text text text text
 		Param4 = @{
 			description = 'Parameter 4.'
 			default = 'Default 4.'
+			wildcard = $true
 		}
 	}
 	inputs = @(

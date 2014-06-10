@@ -37,9 +37,9 @@ task UpdateScript {
 	Copy-Item $ScriptFile .
 }
 
-# Synopsis: Calls Demo\Test-Helps.ps1
+# Synopsis: Calls Test\Test-Helps.ps1
 task Test UpdateScript, HelpEn, HelpRu, {
-	Set-Location Demo
+	Set-Location Test
 
 	.\Test-Helps.ps1
 
@@ -98,19 +98,14 @@ task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
 	Remove-Item [z] -Force -Recurse
 	$null = mkdir z\tools\en-US, z\tools\ru-RU
 
-	# copy project files
-	Copy-Item -Destination z\tools @(
-		'Helps.ps1'
-		'LICENSE.txt'
-	)
-	Copy-Item -Destination z\tools\en-US 'en-US\Helps-Help.xml'
-	Copy-Item -Destination z\tools\ru-RU 'ru-RU\Helps-Help.xml'
-
-	# move generated files
-	Move-Item -Destination z\tools @(
-		'README.htm'
-		'Release-Notes.htm'
-	)
+	# copy files
+	Copy-Item en-US\Helps-Help.xml z\tools\en-US
+	Copy-Item ru-RU\Helps-Help.xml z\tools\ru-RU
+	Copy-Item -Destination z\tools `
+	Helps.ps1,
+	LICENSE.txt,
+	README.htm,
+	Release-Notes.htm
 }
 
 # Synopsis: Make the NuGet package
