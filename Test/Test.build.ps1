@@ -18,7 +18,7 @@ function Exit-Build {
 function Test-Error([string]$Expected, [scriptblock]$Script) {
 	$err = try { & $Script } catch { $_ | Out-String }
 	Write-Build Magenta $err
-	assert ($err -like $Expected)
+	if ($err -notlike $Expected) { Write-Error -ErrorAction 1 'Unexpected error.' }
 }
 
 task ConvertMissingScript {
@@ -525,6 +525,38 @@ task ConvertMissingCommandParametersNames {
 }
 '@ > z.ps1
 	Test-Error "Convert-Helps : Help of Helps: 'parameters' contains missing parameter names: bad? bad?.*At *\Test.build.ps1:*" {
+		Convert-Helps z.ps1 z.xml
+	}
+}
+
+task ConvertBadCommandParameterInfoKey {
+	function bar($p1) {}
+	@'
+@{
+	command = 'bar'
+	synopsis = 'bar'
+	parameters = @{
+		p1 = @{bad = 1}
+	}
+}
+'@ > z.ps1
+	Test-Error "Convert-Helps : Help of 'bar.parameters.p1': Invalid key 'bad'. Valid keys: *.*At *\Test.build.ps1:*" {
+		Convert-Helps z.ps1 z.xml
+	}
+}
+
+task ConvertBadCommandParameterInfoWildcard {
+	function bar($p1) {}
+	@'
+@{
+	command = 'bar'
+	synopsis = 'bar'
+	parameters = @{
+		p1 = @{wildcard = 1}
+	}
+}
+'@ > z.ps1
+	Test-Error "Convert-Helps : Help of 'bar.parameters.p1': 'wildcard' value type must be [[]bool[]].*At *\Test.build.ps1:*" {
 		Convert-Helps z.ps1 z.xml
 	}
 }

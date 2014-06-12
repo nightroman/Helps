@@ -44,7 +44,7 @@ task Test UpdateScript, HelpEn, HelpRu, {
 	.\Test-Helps.ps1
 
 	Invoke-Build * -Result result
-	assert (46 -eq $result.Tasks.Count) $result.Tasks.Count
+	assert (48 -eq $result.Tasks.Count) $result.Tasks.Count
 	assert (0 -eq $result.Errors.Count) $result.Errors.Count
 	assert (2 -eq $result.Warnings.Count) $result.Warnings.Count
 },

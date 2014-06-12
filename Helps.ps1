@@ -20,7 +20,7 @@
 param()
 
 # The current version.
-function Get-HelpsVersion {[System.Version]'1.1.3'}
+function Get-HelpsVersion {[System.Version]'1.1.4'}
 
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
@@ -532,7 +532,7 @@ function Helps.Import(
 	[string[]]$Script,
 	[hashtable]$Parameters = @{}
 ) {
-	$validCommandKeys = @( ###
+	$validCommandKeys = @(
 		'command'
 		'synopsis'
 		#'copyright' -- help does not show it
@@ -547,7 +547,7 @@ function Helps.Import(
 		'links'
 	)
 
-	$validProviderKeys = @( ###
+	$validProviderKeys = @(
 		'provider'
 		'drives'
 		'synopsis'
@@ -569,21 +569,35 @@ function Helps.Import(
 	# invoke scripts, validate output
 	foreach($path in $Script) {
 		foreach($hash in (& $path @Parameters)) {
+			# must be hashtable
 			if ($hash -isnot [hashtable]) {
 				Helps.Error "$Script : Help scripts output hashtables. Unexpected output is '$($hash.GetType())'."
 			}
-			if ($name = $hash['command']) { foreach($key in $hash.Keys) { if ($validCommandKeys -notcontains $key) {
-				Helps.Error "$Script : Invalid key '$key' in command '$name'. Valid keys: $validCommandKeys."
-			}}}
-			elseif ($name = $hash['provider']) { foreach($key in $hash.Keys) { if ($validProviderKeys -notcontains $key) {
-				Helps.Error "$Script : Invalid key '$key' in provider '$name'. Valid keys: $validCommandKeys."
-			}}}
+
+			# command help
+			if ($name = $hash['command']) { foreach($key in $hash.Keys) {
+				# valid key
+				if ($validCommandKeys -notcontains $key) {
+					Helps.Error "$Script : Invalid key '$key' in command '$name'. Valid keys: $validCommandKeys."
+				}
+			}}
+			# provider help
+			elseif ($name = $hash['provider']) { foreach($key in $hash.Keys) {
+				# valid key
+				if ($validProviderKeys -notcontains $key) {
+					Helps.Error "$Script : Invalid key '$key' in provider '$name'. Valid keys: $validCommandKeys."
+				}
+			}}
+			# unknown help
 			else {
 				Helps.Error "$Script : Help table must contain either 'command' or 'provider' key."
 			}
+
+			# must contain synopsis
 			if (!$hash['synopsis']) {
 				Helps.Error "$Script : Help of '$name': Missing or empty 'synopsis'."
 			}
+
 			$hash
 		}
 	}
@@ -912,7 +926,7 @@ function Helps.ConvertCommand($Help) {
 
 	$sets = $Help['sets']
 	if ($sets) {
-		if ($sets -isnot [Hashtable]) {
+		if ($sets -isnot [hashtable]) {
 			Helps.Error "Help of '$($1.Name)': 'sets' must be hashtable, not '$($sets.GetType())'."
 		}
 		$sets = @{} + $sets
@@ -973,7 +987,7 @@ function Helps.ConvertCommand($Help) {
 
 	$parameters = $Help['parameters']
 	if ($parameters) {
-		if ($parameters -isnot [Hashtable]) {
+		if ($parameters -isnot [hashtable]) {
 			Helps.Error "Help of '$($1.Name)': 'parameters' must be hashtable, not '$($parameters.GetType())'."
 		}
 		$parameters = @{} + $parameters
@@ -984,17 +998,34 @@ function Helps.ConvertCommand($Help) {
 
 	'<command:parameters>'
 
+	$validParameterKeys = @(
+		'description'
+		'default'
+		'wildcard'
+	)
+
 	Get-CommandParameter $1.Command { if ($_.Position -ge 0) { $_.Position } else { 999 } }, Name | .{process{
 		# info is hashtable or strings
 		if (($parameterInfo = $parameters[$_.Name]) -is [hashtable]) {
-			$wildcard = $parameterInfo['wildcard']
-			$defaultValue = $parameterInfo['default']
+			# valid keys
+			foreach($key in $parameterInfo.Keys) {
+				if ($validParameterKeys -notcontains $key) {
+					Helps.Error "Help of '$($1.Name).parameters.$($_.Name)': Invalid key '$key'. Valid keys: $validParameterKeys."
+				}
+			}
 			$parameterDescription = @($parameterInfo['description'])
+			$defaultValue = $parameterInfo['default']
+			$wildcard = $parameterInfo['wildcard']
+
+			# wildcard is either $null or [bool]
+			if ($null -ne $wildcard -and $wildcard -isnot [bool]) {
+				Helps.Error "Help of '$($1.Name).parameters.$($_.Name)': 'wildcard' value type must be [bool]."
+			}
 		}
 		else {
-			$wildcard = $null
-			$defaultValue = $null
 			$parameterDescription = @($parameterInfo)
+			$defaultValue = $null
+			$wildcard = $null
 		}
 
 		# warning

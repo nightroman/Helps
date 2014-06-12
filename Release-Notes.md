@@ -2,6 +2,10 @@
 Helps Release Notes
 ===================
 
+## v1.1.4
+
+Resolved #5 (parameter info must be validated).
+
 ## v1.1.3
 
 Resolved #4 (*wildcard* in parameter info).
