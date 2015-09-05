@@ -2,6 +2,11 @@
 Helps Release Notes
 ===================
 
+## v1.1.5
+
+Avoid warnings about new common parameters `InformationAction` and
+`InformationVariable` in PowerShell v5.
+
 ## v1.1.4
 
 Resolved #5 (parameter info must be validated).

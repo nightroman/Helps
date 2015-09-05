@@ -20,7 +20,7 @@
 param()
 
 # The current version.
-function Get-HelpsVersion {[System.Version]'1.1.4'}
+function Get-HelpsVersion {[System.Version]'1.1.5'}
 
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
@@ -149,15 +149,17 @@ function Helps.Error($M, $C=0)
 # Filters out common parameters
 function Helps.IsParameter($Name) {
 	@(
-		'Verbose',
-		'Debug',
-		'ErrorAction',
-		'ErrorVariable',
-		'WarningAction',
-		'WarningVariable',
-		'OutVariable',
-		'OutBuffer',
+		'Verbose'
+		'Debug'
+		'ErrorAction'
+		'ErrorVariable'
+		'WarningAction'
+		'WarningVariable'
+		'OutVariable'
+		'OutBuffer'
 		'PipelineVariable'
+		'InformationAction'
+		'InformationVariable'
 	) -notcontains $Name
 }
 

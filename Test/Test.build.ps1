@@ -177,7 +177,7 @@ task NewMissingCommandWarningAndOutput {
 	$nWarning = ${*}.Warnings.Count
 	$out = (New-Helps Missing-Command | Out-String).Trim()
 	assert (${*}.Warnings.Count -eq $nWarning + 1)
-	assert (${*}.Warnings[$nWarning] -eq "WARNING: Command 'Missing-Command' is not found.")
+	assert (${*}.Warnings[$nWarning].Message -eq "Command 'Missing-Command' is not found.")
 	assert ($out -like @'
 # Missing-Command command help
 @{
@@ -190,7 +190,7 @@ task NewMissingProviderWarningAndOutput {
 	$nWarning = ${*}.Warnings.Count
 	$out = (New-Helps -Provider MissingProvider | Out-String).Trim()
 	assert (${*}.Warnings.Count -eq $nWarning + 1)
-	assert (${*}.Warnings[$nWarning] -eq "WARNING: Provider 'MissingProvider' is not found.")
+	assert (${*}.Warnings[$nWarning].Message -eq "Provider 'MissingProvider' is not found.")
 	assert ($out -like @'
 # MissingProvider provider help
 @{
