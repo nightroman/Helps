@@ -56,6 +56,7 @@
 				description = 'Description of parameter 2.'
 				default = 'Default value 2.'
 				wildcard = $true
+				required = $true
 			}
 
 	examples ... title

@@ -20,7 +20,7 @@
 param()
 
 # The current version.
-function Get-HelpsVersion {[System.Version]'1.1.5'}
+function Get-HelpsVersion {[System.Version]'1.2.0'}
 
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
@@ -959,6 +959,18 @@ function Helps.ConvertCommand($Help) {
 
 	'<command:syntax>'
 
+	# get parameters, needed for `required`
+	$parameters = $Help['parameters']
+	if ($parameters) {
+		if ($parameters -isnot [hashtable]) {
+			Helps.Error "Help of '$($1.Name)': 'parameters' must be hashtable, not '$($parameters.GetType())'."
+		}
+		$parameters = @{} + $parameters
+	}
+	else {
+		$parameters = @{}
+	}
+
 	foreach($set in Get-ParameterSet) {
 		'<command:syntaxItem>'
 		"<maml:name>$($1.Name)</maml:name>"
@@ -966,7 +978,9 @@ function Helps.ConvertCommand($Help) {
 			$start = '<command:parameter '
 
 			# required, position, pipelineInput is not needed
-			if ($_.IsMandatory) { $start += 'required="true" ' } else { $start += 'required="false" ' }
+			$param = $parameters[$_.Name]
+			$required = ($param -is [hashtable]) -and ($param['required'])
+			if ($required -or $_.IsMandatory) { $start += 'required="true" ' } else { $start += 'required="false" ' }
 			if ($_.Position -ge 0) { $start += 'position="' + ($_.Position + 1) + '" ' } else { $start += 'position="named" ' }
 
 			$start += '>'
@@ -987,23 +1001,13 @@ function Helps.ConvertCommand($Help) {
 
 	### parameters
 
-	$parameters = $Help['parameters']
-	if ($parameters) {
-		if ($parameters -isnot [hashtable]) {
-			Helps.Error "Help of '$($1.Name)': 'parameters' must be hashtable, not '$($parameters.GetType())'."
-		}
-		$parameters = @{} + $parameters
-	}
-	else {
-		$parameters = @{}
-	}
-
 	'<command:parameters>'
 
 	$validParameterKeys = @(
 		'description'
 		'default'
 		'wildcard'
+		'required'
 	)
 
 	Get-CommandParameter $1.Command { if ($_.Position -ge 0) { $_.Position } else { 999 } }, Name | .{process{
@@ -1018,16 +1022,23 @@ function Helps.ConvertCommand($Help) {
 			$parameterDescription = @($parameterInfo['description'])
 			$defaultValue = $parameterInfo['default']
 			$wildcard = $parameterInfo['wildcard']
+			$required = $parameterInfo['required']
 
 			# wildcard is either $null or [bool]
 			if ($null -ne $wildcard -and $wildcard -isnot [bool]) {
 				Helps.Error "Help of '$($1.Name).parameters.$($_.Name)': 'wildcard' value type must be [bool]."
+			}
+
+			# required is either $null or [bool]
+			if ($null -ne $required -and $required -isnot [bool]) {
+				Helps.Error "Help of '$($1.Name).parameters.$($_.Name)': 'required' value type must be [bool]."
 			}
 		}
 		else {
 			$parameterDescription = @($parameterInfo)
 			$defaultValue = $null
 			$wildcard = $null
+			$required = $null
 		}
 
 		# warning
@@ -1039,7 +1050,7 @@ function Helps.ConvertCommand($Help) {
 		$start = '<command:parameter '
 
 		# required
-		if ($_.IsMandatory) { $start += 'required="true" ' } else { $start += 'required="false" ' }
+		if ($required -or $_.IsMandatory) { $start += 'required="true" ' } else { $start += 'required="false" ' }
 
 		# pipelineInput
 		if ($_.ValueFromPipeline -and $_.ValueFromPipelineByPropertyName) {

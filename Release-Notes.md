@@ -2,6 +2,12 @@
 Helps Release Notes
 ===================
 
+## v1.2.0
+
+Resolved #8 (*required* in parameter info).
+
+NuGet package: set `developmentDependency`.
+
 ## v1.1.5
 
 Avoid warnings about new common parameters `InformationAction` and

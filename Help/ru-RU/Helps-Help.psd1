@@ -58,6 +58,7 @@
 				description = 'Описание параметра 2.'
 				default = 'Значение по умолчанию 2.'
 				wildcard = $true
+				required = $true
 			}
 
 	examples ... title

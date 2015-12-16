@@ -67,6 +67,7 @@ text text text text text text text text text text
 			description = 'Parameter 4.'
 			default = 'Default 4.'
 			wildcard = $true
+			required = $true
 		}
 	}
 	inputs = @(

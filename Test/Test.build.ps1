@@ -561,6 +561,22 @@ task ConvertBadCommandParameterInfoWildcard {
 	}
 }
 
+task ConvertBadCommandParameterInfoRequired {
+	function bar($p1) {}
+	@'
+@{
+	command = 'bar'
+	synopsis = 'bar'
+	parameters = @{
+		p1 = @{required = 1}
+	}
+}
+'@ > z.ps1
+	Test-Error "Convert-Helps : Help of 'bar.parameters.p1': 'required' value type must be [[]bool[]].*At *\Test.build.ps1:*" {
+		Convert-Helps z.ps1 z.xml
+	}
+}
+
 # PSBase is needed in $Command.Parameters.PSBase.Keys, see https://github.com/nightroman/Helps/issues/2
 function Test-ProblemParameterNames
 {

@@ -14,13 +14,16 @@ Set-StrictMode -Version Latest
 $ScriptFile = (Get-Command Helps.ps1).Definition
 $ScriptRoot = Split-Path $ScriptFile
 
-# Import markdown tasks ConvertMarkdown and RemoveMarkdownHtml.
-# <https://github.com/nightroman/Invoke-Build/wiki/Partial-Incremental-Tasks>
-Markdown.tasks.ps1
+# Synopsis: Convert markdown files to HTML
+# <http://johnmacfarlane.net/pandoc/>
+task Markdown {
+	exec { pandoc.exe --standalone --from=markdown_strict --output=README.htm README.md }
+	exec { pandoc.exe --standalone --from=markdown_strict --output=Release-Notes.htm Release-Notes.md }
+}
 
 # Synopsis: Remove temp files
-task Clean RemoveMarkdownHtml, {
-	Remove-Item z, z.ps1, en-US, ru-RU, Helps.*.nupkg -Force -Recurse -ErrorAction 0
+task Clean {
+	Remove-Item z, z.ps1, en-US, ru-RU, Helps.*.nupkg, README.htm, Release-Notes.htm -Force -Recurse -ErrorAction 0
 }
 
 # Synopsis: Set $script:Version
@@ -29,7 +32,7 @@ task Version {
 	($script:Version = Get-HelpsVersion)
 }
 
-# Synopsis: Copy Helps.ps1 from its working location to the project.
+# Synopsis: Copy Helps.ps1 from its working location to the project
 task UpdateScript {
 	$target = Get-Item Helps.ps1 -ErrorAction 0
 	$source = Get-Item $ScriptFile
@@ -44,11 +47,16 @@ task Test UpdateScript, HelpEn, HelpRu, {
 	.\Test-Helps.ps1
 
 	Invoke-Build * -Result result
-	assert (48 -eq $result.Tasks.Count) $result.Tasks.Count
+	assert (49 -eq $result.Tasks.Count) $result.Tasks.Count
 	assert (0 -eq $result.Errors.Count) $result.Errors.Count
 	assert (2 -eq $result.Warnings.Count) $result.Warnings.Count
 },
 Clean
+
+# Synopsis: Tests in PS v2
+task Test2 {
+	exec {PowerShell.exe -Version 2 -NoProfile Invoke-Build.ps1 Test}
+}
 
 # Synopsis: Build and test en-US help
 task HelpEn {
@@ -93,7 +101,7 @@ task View {
 }
 
 # Synopsis: Make the package in z\tools for NuGet
-task Package ConvertMarkdown, HelpEn, HelpRu, UpdateScript, {
+task Package Markdown, HelpEn, HelpRu, UpdateScript, {
 	# package directories
 	Remove-Item [z] -Force -Recurse
 	$null = mkdir z\tools\en-US, z\tools\ru-RU
@@ -131,6 +139,7 @@ and functions in scripts or modules.
 		<description>$text</description>
 		<tags>powershell help builder</tags>
 		<releaseNotes>https://github.com/nightroman/Helps/blob/master/Release-Notes.md</releaseNotes>
+		<developmentDependency>true</developmentDependency>
 	</metadata>
 </package>
 "@
@@ -138,5 +147,21 @@ and functions in scripts or modules.
 	exec { NuGet pack z\Package.nuspec -NoPackageAnalysis }
 }
 
+# Synopsis: Push with a version tag.
+task PushRelease Version, {
+	$changes = exec { git status --short }
+	assert (!$changes) "Please, commit changes."
+
+	exec { git push }
+	exec { git tag -a "v$Version" -m "v$Version" }
+	exec { git push origin "v$Version" }
+}
+
+# Synopsis: Push NuGet package.
+task PushNuGet NuGet, {
+	exec { NuGet push "Invoke-Build.$Version.nupkg" }
+},
+Clean
+
 # Synopsis: Build help files, run tests.
-task . Test
+task . Test2, Test
