@@ -47,9 +47,9 @@ task Test UpdateScript, HelpEn, HelpRu, {
 	.\Test-Helps.ps1
 
 	Invoke-Build * -Result result
-	assert (49 -eq $result.Tasks.Count) $result.Tasks.Count
-	assert (0 -eq $result.Errors.Count) $result.Errors.Count
-	assert (2 -eq $result.Warnings.Count) $result.Warnings.Count
+	equals $result.Tasks.Count 49
+	equals $result.Errors.Count 0
+	equals $result.Warnings.Count 2
 },
 Clean
 
@@ -93,10 +93,10 @@ task View {
 		'Merge-Helps'
 		'New-Helps'
 		'Test-Helps'
-	) | %{
+	) | .{process{
 		'#'*77
 		Get-Help $_ -Full | Out-String -Width 80
-	} | Out-File $file
+	}} | Out-File $file
 	notepad $file
 }
 

@@ -84,10 +84,10 @@ Test-Helps TestProvider.dll-Help.ps1
 	'Test-Function2'
 	'Test-FunctionDynamicParam'
 	'TestProvider'
-) | %{
+) | .{process{
 	'#'*77
 	Get-Help $_ -Full | Out-String -Width 80
-} | Out-File $log
+}} | Out-File $log
 
 ### get New-Helps
 .{

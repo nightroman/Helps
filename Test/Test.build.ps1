@@ -176,8 +176,8 @@ task TestBadCodeType {
 task NewMissingCommandWarningAndOutput {
 	$nWarning = ${*}.Warnings.Count
 	$out = (New-Helps Missing-Command | Out-String).Trim()
-	assert (${*}.Warnings.Count -eq $nWarning + 1)
-	assert (${*}.Warnings[$nWarning].Message -eq "Command 'Missing-Command' is not found.")
+	equals ${*}.Warnings.Count ($nWarning + 1)
+	equals ${*}.Warnings[$nWarning].Message "Command 'Missing-Command' is not found."
 	assert ($out -like @'
 # Missing-Command command help
 @{
@@ -189,8 +189,8 @@ task NewMissingCommandWarningAndOutput {
 task NewMissingProviderWarningAndOutput {
 	$nWarning = ${*}.Warnings.Count
 	$out = (New-Helps -Provider MissingProvider | Out-String).Trim()
-	assert (${*}.Warnings.Count -eq $nWarning + 1)
-	assert (${*}.Warnings[$nWarning].Message -eq "Provider 'MissingProvider' is not found.")
+	equals ${*}.Warnings.Count ($nWarning + 1)
+	equals ${*}.Warnings[$nWarning].Message "Provider 'MissingProvider' is not found."
 	assert ($out -like @'
 # MissingProvider provider help
 @{
@@ -578,8 +578,7 @@ task ConvertBadCommandParameterInfoRequired {
 }
 
 # PSBase is needed in $Command.Parameters.PSBase.Keys, see https://github.com/nightroman/Helps/issues/2
-function Test-ProblemParameterNames
-{
+function Test-ProblemParameterName {
 	param(
 		[Parameter()]
 		$Comparer,
@@ -591,11 +590,10 @@ function Test-ProblemParameterNames
 		$SyncRoot,
 		$Values
 	)
-	{ write-host "test" }
 }
 task ProblemParameterNames {
 	# generate help
-	$res = New-Helps -Command Test-ProblemParameterNames
+	$res = New-Helps -Command Test-ProblemParameterName
 	assert ($res -match "\t\tComparer = ''")
 	assert ($res -match "\t\tCount = ''")
 	assert ($res -match "\t\tIsFixedSize = ''")

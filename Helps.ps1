@@ -1,7 +1,7 @@
 
 <#
 * Helps.ps1 - PowerShell Help Builder
-* Copyright (c) 2011-2014 Roman Kuzmin
+* Copyright (c) 2011-2016 Roman Kuzmin
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -615,8 +615,8 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 		'Name'
 	)
 
-	function Encode-Xml($Text) {
-		$text.Replace('&', '&amp;').Replace("'", '&apos;').Replace('"', '&quot;').Replace('<', '&lt;').Replace('>', '&gt;')
+	function Get-Escape($Text) {
+		[System.Security.SecurityElement]::Escape($Text)
 	}
 
 	$tabs = [regex]'^(\ +)'
@@ -637,18 +637,18 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 	}
 
 	function Out-Line($Tag, $Text) {
-		"<$Tag>$(Encode-Xml (($Text | .{process{ Format-Line $_ }}) -join "`r`n"))</$Tag>"
+		"<$Tag>$(Get-Escape (($Text | .{process{ Format-Line $_ }}) -join "`r`n"))</$Tag>"
 	}
 
 	function Out-Text($Tag, $Para, $Text) {
 		"<$Tag>"
 		foreach($line in $Text) {
-			"<$Para>$(Encode-Xml (Format-Line $line))</$Para>"
+			"<$Para>$(Get-Escape (Format-Line $line))</$Para>"
 		}
 		"</$Tag>"
 	}
 
-	function Out-Types($HelpKey, $TagSet, $TagType, $Types) {
+	function Out-Type($HelpKey, $TagSet, $TagType, $Types) {
 		"<$TagSet>"
 		foreach($item in $Types) {
 			Test-Hash $item $HelpKey $validTypeKeys
@@ -658,7 +658,7 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 			'<dev:type>'
 			$type = $item['type']
 			if ($type) {
-				"<maml:name>$(Encode-Xml $type)</maml:name>"
+				"<maml:name>$(Get-Escape $type)</maml:name>"
 			}
 			'</dev:type>'
 
@@ -692,7 +692,7 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 		remarks = 'Remarks'
 	}
 
-	function Out-Examples($examples, $tags) {
+	function Out-Example($examples, $tags) {
 		"<$($tags.examples)>"
 
 		$exampleNumber = 0
@@ -735,7 +735,7 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 					}
 					$code = $code.Trim()
 				}
-				"<$($tags.code)>$(Encode-Xml $code)</$($tags.code)>"
+				"<$($tags.code)>$(Get-Escape $code)</$($tags.code)>"
 			}
 
 			# remarks
@@ -764,7 +764,7 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 		URI = 'uri'
 	}
 
-	function Out-Links($links, $tags) {
+	function Out-Link($links, $tags) {
 		"<$($tags.links)>"
 
 		foreach($link in $links) {
@@ -774,11 +774,11 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 
 			$text = $link['text']
 			if ($text) {
-				"<$($tags.text)>$(Encode-Xml $text)</$($tags.text)>"
+				"<$($tags.text)>$(Get-Escape $text)</$($tags.text)>"
 			}
 			$URI = $link['uri']
 			if ($URI) {
-				"<$($tags.URI)>$(Encode-Xml $URI)</$($tags.URI)>"
+				"<$($tags.URI)>$(Get-Escape $URI)</$($tags.URI)>"
 			}
 
 			"</$($tags.link)>"
@@ -1109,14 +1109,14 @@ function Helps.ConvertCommand($Help) {
 
 	if ($inputs = $Help['inputs']) {
 		$inputs = @($inputs)
-		Out-Types inputs command:inputTypes command:inputType $inputs
+		Out-Type inputs command:inputTypes command:inputType $inputs
 	}
 
 	### outputs - not yet supported type's uri, description
 
 	if ($outputs = $Help['outputs']) {
 		$outputs = @($outputs)
-		Out-Types outputs command:returnValues command:returnValue $outputs
+		Out-Type outputs command:returnValues command:returnValue $outputs
 	}
 
 	### notes - not standard
@@ -1134,14 +1134,14 @@ function Helps.ConvertCommand($Help) {
 
 	$examples = @($Help['examples'])
 	if ($examples) {
-		Out-Examples $examples $1.TagsExampleCommand
+		Out-Example $examples $1.TagsExampleCommand
 	}
 
 	### links
 
 	$links = @($Help['links'])
 	if ($links) {
-		Out-Links $links $1.TagsLinksCommand
+		Out-Link $links $1.TagsLinksCommand
 	}
 
 	# complete command
@@ -1213,7 +1213,7 @@ function Helps.ConvertProvider($Help) {
 
 			$examples = @($task['examples'])
 			if ($examples) {
-				Out-Examples $examples $1.TagsExamplesProvider
+				Out-Example $examples $1.TagsExamplesProvider
 			}
 
 			'</Task>'
@@ -1236,13 +1236,13 @@ function Helps.ConvertProvider($Help) {
 			### name
 			$text = $parameter['name']
 			if ($text) {
-				"<Name>$(Encode-Xml $text)</Name>"
+				"<Name>$(Get-Escape $text)</Name>"
 			}
 
 			### type
 			$text = $parameter['type']
 			if ($text) {
-				"<Type><Name>$(Encode-Xml $text)</Name></Type>"
+				"<Type><Name>$(Get-Escape $text)</Name></Type>"
 			}
 
 			### description
@@ -1254,7 +1254,7 @@ function Helps.ConvertProvider($Help) {
 			### cmdlets
 			$text = $parameter['cmdlets']
 			if ($text) {
-				"<CmdletSupported>$(Encode-Xml $text)</CmdletSupported>"
+				"<CmdletSupported>$(Get-Escape $text)</CmdletSupported>"
 			}
 
 			### values
@@ -1270,7 +1270,7 @@ function Helps.ConvertProvider($Help) {
 					### value
 					$text = $value['value']
 					if ($text) {
-						"<Value>$(Encode-Xml $text)</Value>"
+						"<Value>$(Get-Escape $text)</Value>"
 					}
 
 					### description
@@ -1302,7 +1302,7 @@ function Helps.ConvertProvider($Help) {
 
 	$links = @($Help['links'])
 	if ($links) {
-		Out-Links $links $1.TagsLinksProvider
+		Out-Link $links $1.TagsLinksProvider
 	}
 
 	### end provider
