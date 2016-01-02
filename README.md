@@ -6,9 +6,8 @@ scripts and for creating help script templates for existing objects. Help can
 be created for everything that supports XML help: cmdlets, providers, scripts,
 and functions in scripts or modules.
 
-Help scripts are almost WYSIWYG, they look very similar to the result help.
-Still, they are PowerShell scripts and this makes a lot of useful features
-easy. One of them is building localized help files.
+Help scripts are similar to the result help and they are easier to compose than
+XML. Scripts make a lot of things easy. One of them is building localized help.
 
 ## Quick Start
 
@@ -16,11 +15,10 @@ easy. One of them is building localized help files.
 Helps is distributed as the NuGet package [Helps](https://www.nuget.org/packages/Helps).
 Download it to the current location as the directory *"Helps"* by this PowerShell command:
 
-    Invoke-Expression (New-Object Net.WebClient).DownloadString('https://raw.github.com/nightroman/Helps/master/Download.ps1')
+    Invoke-Expression "& {$((New-Object Net.WebClient).DownloadString('https://github.com/nightroman/PowerShelf/raw/master/Save-NuGetTool.ps1'))} Helps"
 
 Alternatively, download it by NuGet tools or [directly](http://nuget.org/api/v2/package/Helps).
-In the latter case rename the package to *".zip"* and unzip. Use the package
-subdirectory *"tools"*.
+In the latter case save it as *".zip"* and unzip. Use the package subdirectory *"tools"*.
 
 Copy *Helps.ps1* and one of its help files *Helps-Help.xml* to a directory
 included in the system path. Then the script can be dot-sourced from the
