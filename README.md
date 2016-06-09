@@ -86,3 +86,4 @@ For its functions. At first dot-source the script and then call `help`:
 * [Provider Help Script](https://github.com/nightroman/Helps/wiki/Provider-Help-Script)
 * [Localized Help Script](https://github.com/nightroman/Helps/wiki/Localized-Help-Script)
 * [Help Scripts in Projects](https://github.com/nightroman/Helps/wiki/Help-Scripts-in-Projects)
+* [Why Helps is not a module](https://github.com/nightroman/Helps/issues/9)
