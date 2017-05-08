@@ -7,11 +7,11 @@
 	Do not use ${*}.Warnings[-1] -- it fails in PS v2.
 #>
 
-function Enter-Build {
+Enter-Build {
 	. Helps
 }
 
-function Exit-Build {
+Exit-Build {
 	Remove-Item z.*
 }
 
