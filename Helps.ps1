@@ -15,9 +15,6 @@ specific language governing permissions and limitations under the License.
 #.ExternalHelp Helps-Help.xml
 param()
 
-# The current version.
-function Get-HelpsVersion {[System.Version]'1.2.0'}
-
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
 	[Parameter(Mandatory=1)][ValidateNotNullOrEmpty()][string[]]$Script,

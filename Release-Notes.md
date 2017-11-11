@@ -1,6 +1,10 @@
 
-Helps Release Notes
-===================
+# Helps Release Notes
+
+## v1.3.0
+
+- Publish the module at PSGallery (#9).
+- Add module files to the NuGet package.
 
 ## v1.2.0
 

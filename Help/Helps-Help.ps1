@@ -23,8 +23,7 @@
 	Convert-Helps Helps-Help.ps1 Helps-Help.xml @{ UICulture = 'ru-RU' }
 #>
 
-param
-(
+param(
 	$UICulture = 'en-US'
 )
 
@@ -46,24 +45,6 @@ $BaseHelp = Merge-Helps $AnyHelp @{
 		Parameters = $data.ParametersParameter
 	}
 	outputs = @()
-}
-
-### Helps.ps1 command help
-@{
-	command = 'Helps.ps1'
-	synopsis = $data.Helpsps1Synopsis
-	description = $data.Helpsps1Description
-	parameters = @{}
-	inputs = @()
-	outputs = @()
-	links = @(
-		@{ text = 'Convert-Helps' }
-		@{ text = 'Merge-Helps' }
-		@{ text = 'New-Helps' }
-		@{ text = 'Test-Helps' }
-		@{ URI = 'https://github.com/nightroman/Helps/wiki/Command-Help-Script' }
-		@{ URI = 'https://github.com/nightroman/Helps/wiki/Provider-Help-Script' }
-	)
 }
 
 ### Convert-Helps command (inherits base help)

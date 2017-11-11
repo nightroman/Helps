@@ -8,11 +8,65 @@ param(
 	$Culture = 'en-US'
 )
 
+$ModuleName = 'Helps'
+$ModuleRoot = Join-Path ([Environment]::GetFolderPath('MyDocuments')) WindowsPowerShell\Modules\$ModuleName
+
 Set-StrictMode -Version Latest
 
-# Working script is located in the path, get its full path.
-$ScriptFile = (Get-Command Helps.ps1).Definition
-$ScriptRoot = Split-Path $ScriptFile
+$TargetFiles = @(
+	"$ModuleRoot/Helps.ps1"
+	"$ModuleRoot/Helps.psd1"
+	"$ModuleRoot/Helps.psm1"
+	"$ModuleRoot/en-US/about_$ModuleName.help.txt"
+	"$ModuleRoot/en-US/Helps-Help.xml"
+	"$ModuleRoot/ru-RU/about_$ModuleName.help.txt"
+	"$ModuleRoot/ru-RU/Helps-Help.xml"
+)
+
+# Synopsis: Assembles files in the target module folder.
+# Target directories are created by help tasks.
+task Build Version, HelpEn, HelpRu, {
+	Copy-Item -Destination $ModuleRoot @(
+		"Helps.ps1"
+		"Helps.psm1"
+	)
+	Copy-Item -Destination $ModuleRoot/en-US @(
+		"Help/en-US/about_$ModuleName.help.txt"
+	)
+	Copy-Item -Destination $ModuleRoot/ru-RU @(
+		"Help/ru-RU/about_$ModuleName.help.txt"
+	)
+
+	# make manifest
+	$Summary = 'PowerShell help file builder'
+	Set-Content "$ModuleRoot/Helps.psd1" @"
+@{
+	Author = 'Roman Kuzmin'
+	ModuleVersion = '$Version'
+	Description = '$Summary'
+	CompanyName = 'https://github.com/nightroman/$ModuleName'
+	Copyright = 'Copyright (c) 2011-2017 Roman Kuzmin'
+
+	ModuleToProcess = 'Helps.psm1'
+	PowerShellVersion = '2.0'
+	GUID = '8b45439c-46eb-459e-a090-3b7bbc1af1b1'
+
+	FunctionsToExport = 'Convert-Helps', 'Merge-Helps', 'New-Helps', 'Test-Helps'
+	VariablesToExport = @()
+	CmdletsToExport = @()
+	AliasesToExport = @()
+
+	PrivateData = @{
+		PSData = @{
+			Tags = 'help', 'build', 'MAML', 'XML'
+			LicenseUri = 'http://www.apache.org/licenses/LICENSE-2.0'
+			ProjectUri = 'https://github.com/nightroman/$ModuleName'
+			ReleaseNotes = 'https://github.com/nightroman/$ModuleName/blob/master/Release-Notes.md'
+		}
+	}
+}
+"@
+}
 
 # Synopsis: Convert markdown files to HTML
 # <http://johnmacfarlane.net/pandoc/>
@@ -28,8 +82,8 @@ task Clean {
 
 # Synopsis: Set $script:Version
 task Version {
-	. Helps
-	($script:Version = Get-HelpsVersion)
+	($script:Version = .{ switch -Regex -File Release-Notes.md {'##\s+v(\d+\.\d+\.\d+)' {return $Matches[1]}} })
+	assert $Version
 }
 
 # Synopsis: Copy Helps.ps1 from its working location to the project
@@ -58,28 +112,26 @@ task Test2 {
 	exec {PowerShell.exe -Version 2 -NoProfile Invoke-Build.ps1 Test}
 }
 
-# Synopsis: Build and test en-US help
+# Synopsis: Build en-US help
 task HelpEn {
-	$null = mkdir en-US -Force
+	$null = mkdir "$ModuleRoot/en-US" -Force
 
-	. Helps.ps1
-	Convert-Helps Help\Helps-Help.ps1 .\en-US\Helps-Help.xml @{ UICulture = 'en-US' }
+	. ./Helps.ps1
+	Convert-Helps Help/Helps-Help.ps1 "$ModuleRoot/en-US/Helps-Help.xml" @{ UICulture = 'en-US' }
 
-	Copy-Item .\en-US\Helps-Help.xml $ScriptRoot\Helps-Help.xml
-
-	Set-Location Help
-	Test-Helps Helps-Help.ps1
+	#??Set-Location Help
+	#??Test-Helps Helps-Help.ps1
 }
 
 # Synopsis: Build and test ru-RU help
 task HelpRu {
-	$null = mkdir ru-RU -Force
+	$null = mkdir "$ModuleRoot/ru-RU" -Force
 
-	. Helps.ps1
-	Convert-Helps Help\Helps-Help.ps1 .\ru-RU\Helps-Help.xml @{ UICulture = 'ru-RU' }
+	. ./Helps.ps1
+	Convert-Helps Help/Helps-Help.ps1 "$ModuleRoot/ru-RU/Helps-Help.xml" @{ UICulture = 'ru-RU' }
 
-	Set-Location Help
-	Test-Helps Helps-Help.ps1
+	#??Set-Location Help
+	#??Test-Helps Helps-Help.ps1
 }
 
 # Synopsis: View help using the $Culture
