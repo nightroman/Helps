@@ -1,6 +1,9 @@
 
-Helps Release Notes
-===================
+# Helps Release Notes
+
+## v1.2.1
+
+Work around missing empty lines between examples with remarks.
 
 ## v1.2.0
 

@@ -15,9 +15,6 @@ specific language governing permissions and limitations under the License.
 #.ExternalHelp Helps-Help.xml
 param()
 
-# The current version.
-function Get-HelpsVersion {[System.Version]'1.2.0'}
-
 #.ExternalHelp Helps-Help.xml
 function Convert-Helps(
 	[Parameter(Mandatory=1)][ValidateNotNullOrEmpty()][string[]]$Script,
@@ -637,10 +634,13 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 		"<$Tag>$(Get-Escape (($Text | .{process{ Format-Line $_ }}) -join "`r`n"))</$Tag>"
 	}
 
-	function Out-Text($Tag, $Para, $Text) {
+	function Out-Text($Tag, $Para, $Text, [switch]$EmptyPara) {
 		"<$Tag>"
 		foreach($line in $Text) {
 			"<$Para>$(Get-Escape (Format-Line $line))</$Para>"
+		}
+		if ($EmptyPara) {
+			"<$Para></$Para>"
 		}
 		"</$Tag>"
 	}
@@ -738,7 +738,8 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 			# remarks
 			$remarks = @($example['remarks'])
 			if ($remarks) {
-				Out-Text $tags.remarks $tags.para $remarks
+				#! empty para, if not last
+				Out-Text $tags.remarks $tags.para $remarks -EmptyPara:($exampleNumber -lt $examples.Count)
 			}
 
 			"</$($tags.example)>"

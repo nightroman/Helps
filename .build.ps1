@@ -17,8 +17,9 @@ $ScriptRoot = Split-Path $ScriptFile
 # Synopsis: Convert markdown files to HTML
 # <http://johnmacfarlane.net/pandoc/>
 task Markdown {
-	exec { pandoc.exe --standalone --from=markdown_strict --output=README.htm README.md }
-	exec { pandoc.exe --standalone --from=markdown_strict --output=Release-Notes.htm Release-Notes.md }
+	function Convert-Markdown($Name) {pandoc.exe --standalone --from=gfm "--output=$Name.htm" "--metadata=pagetitle=$Name" "$Name.md"}
+	exec { Convert-Markdown README }
+	exec { Convert-Markdown Release-Notes }
 }
 
 # Synopsis: Remove temp files
@@ -28,8 +29,8 @@ task Clean {
 
 # Synopsis: Set $script:Version
 task Version {
-	. Helps
-	($script:Version = Get-HelpsVersion)
+	($script:Version = .{ switch -Regex -File Release-Notes.md {'##\s+v(\d+\.\d+\.\d+)' {return $Matches[1]}} })
+	assert $Version
 }
 
 # Synopsis: Copy Helps.ps1 from its working location to the project
@@ -159,7 +160,7 @@ task PushRelease Version, {
 
 # Synopsis: Push NuGet package.
 task PushNuGet NuGet, {
-	exec { NuGet push "Helps.$Version.nupkg" }
+	exec { NuGet.exe push "Helps.$Version.nupkg" -Source nuget.org }
 },
 Clean
 
