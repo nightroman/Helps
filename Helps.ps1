@@ -726,7 +726,7 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 				}
 				# script
 				else {
-					$code = $code.ToString()
+					$code = $code.ToString().Replace("`t", '    ')
 					if ($code -match '(\n\s+)') {
 						$code = $code -replace ($matches[1]), "`n"
 					}

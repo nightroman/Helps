@@ -59,6 +59,11 @@ task Test2 {
 	exec {PowerShell.exe -Version 2 -NoProfile Invoke-Build.ps1 Test}
 }
 
+# Synopsis: Tests in PS v6
+task Test6 -If $env:powershell6 {
+	exec {& $env:powershell6 -NoProfile -Command Invoke-Build.ps1 Test}
+}
+
 # Synopsis: Build and test en-US help
 task HelpEn {
 	$null = mkdir en-US -Force
@@ -165,4 +170,4 @@ task PushNuGet NuGet, {
 Clean
 
 # Synopsis: Build help files, run tests.
-task . Test2, Test
+task . Test2, Test6, Test

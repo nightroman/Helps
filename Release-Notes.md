@@ -1,6 +1,10 @@
 
 # Helps Release Notes
 
+## v1.2.2
+
+Replace tabs with spaces in examples defined as script blocks.
+
 ## v1.2.1
 
 Work around missing empty lines between examples with remarks.
