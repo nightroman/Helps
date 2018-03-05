@@ -13,23 +13,9 @@ XML. Scripts make a lot of things easy. One of them is building localized help.
 
 **Step 1:**
 Helps is distributed as the NuGet package [Helps](https://www.nuget.org/packages/Helps).
-Download it to the current location as the directory *"Helps"* by this PowerShell command:
-
-    Invoke-Expression "& {$((New-Object Net.WebClient).DownloadString('https://github.com/nightroman/PowerShelf/raw/master/Save-NuGetTool.ps1'))} Helps"
-
-Alternatively, download it by NuGet tools or [directly](http://nuget.org/api/v2/package/Helps).
-In the latter case save it as *".zip"* and unzip. Use the package subdirectory *"tools"*.
-
-Copy *Helps.ps1* and one of its help files *Helps-Help.xml* to a directory
-included in the system path. Then the script can be dot-sourced from the
-command line or scripts just by name:
-
-    . Helps.ps1
-
-Alternatively, *Helps.ps1* and *Helps-Help.xml* can be located anywhere, say,
-in *C:/Scripts/Helps*. Then the script should be dot-sourced using its path:
-
-    . C:/Scripts/Helps/Helps.ps1
+Download it by NuGet tools or [directly](http://nuget.org/api/v2/package/Helps).
+In the latter case save it as *".zip"* and unzip. Use the package subdirectory
+*"tools"*. Consider to add this directory to the path.
 
 **Step 2:**
 Choose the command, for example *My-Command* cmdlet from *MyModule*, and make
