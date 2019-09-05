@@ -24,7 +24,7 @@ task Markdown {
 
 # Synopsis: Remove temp files
 task Clean {
-	Remove-Item z, z.ps1, en-US, ru-RU, Helps.*.nupkg, README.htm, Release-Notes.htm -Force -Recurse -ErrorAction 0
+	remove z, z.ps1, en-US, ru-RU, Helps.*.nupkg, README.htm, Release-Notes.htm
 }
 
 # Synopsis: Set $script:Version
@@ -109,7 +109,7 @@ task View {
 # Synopsis: Make the package in z\tools for NuGet
 task Package Markdown, HelpEn, HelpRu, UpdateScript, {
 	# package directories
-	Remove-Item [z] -Force -Recurse
+	remove z
 	$null = mkdir z\tools\en-US, z\tools\ru-RU
 
 	# copy files
@@ -139,7 +139,7 @@ and functions in scripts or modules.
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
 		<projectUrl>https://github.com/nightroman/Helps</projectUrl>
-		<licenseUrl>http://www.apache.org/licenses/LICENSE-2.0</licenseUrl>
+		<license type="expression">Apache-2.0</license>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<summary>$text</summary>
 		<description>$text</description>

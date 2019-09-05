@@ -1,4 +1,3 @@
-
 <#
 Copyright 2011-2017 Roman Kuzmin
 
@@ -603,7 +602,7 @@ function Helps.Import(
 function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 	### sorting
 	$sortParameterInSyntax = @(
-		{ if ($_.Position -ge 0) { $_.Position } else { 999 } }
+		{ if ($_.Position -ne 0x80000000) { $_.Position } else { 0x7fffffff } }
 		{ !$_.IsMandatory }
 		{ $_.ParameterType -eq [System.Management.Automation.SwitchParameter] }
 		'Name'
@@ -979,7 +978,12 @@ function Helps.ConvertCommand($Help) {
 			$param = $parameters[$_.Name]
 			$required = ($param -is [hashtable]) -and ($param['required'])
 			if ($required -or $_.IsMandatory) { $start += 'required="true" ' } else { $start += 'required="false" ' }
-			if ($_.Position -ge 0) { $start += 'position="' + ($_.Position + 1) + '" ' } else { $start += 'position="named" ' }
+			if ($_.Position -ne 0x80000000) {
+				$start += 'position="' + $_.Position + '" '
+			}
+			else {
+				$start += 'position="named" '
+			}
 
 			$start += '>'
 			$start
@@ -1008,7 +1012,7 @@ function Helps.ConvertCommand($Help) {
 		'required'
 	)
 
-	Get-CommandParameter $1.Command { if ($_.Position -ge 0) { $_.Position } else { 999 } }, Name | .{process{
+	Get-CommandParameter $1.Command { if ($_.Position -ne 0x80000000) { $_.Position } else { 0x7fffffff } }, Name | .{process{
 		# info is hashtable or strings
 		if (($parameterInfo = $parameters[$_.Name]) -is [hashtable]) {
 			# valid keys
@@ -1062,8 +1066,8 @@ function Helps.ConvertCommand($Help) {
 		}
 
 		# position
-		if ($_.Position -ge 0) {
-			$start += 'position="' + ($_.Position + 1) + '" '
+		if ($_.Position -ne 0x80000000) {
+			$start += 'position="' + $_.Position + '" '
 		}
 		else {
 			$start += 'position="named" '

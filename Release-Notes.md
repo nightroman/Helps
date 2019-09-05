@@ -1,5 +1,9 @@
-
 # Helps Release Notes
+
+## v1.2.3
+
+Keep parameter positions as specified, do not number from 0 or 1.
+PowerShell is not consistent, too, so let it be up to developers.
 
 ## v1.2.2
 
