@@ -43,6 +43,7 @@ task UpdateScript {
 
 # Synopsis: Calls Test\Test-Helps.ps1
 task Test UpdateScript, HelpEn, HelpRu, {
+	$ErrorView = 'NormalView'
 	Set-Location Test
 
 	.\Test-Helps.ps1

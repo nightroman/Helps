@@ -1,5 +1,5 @@
 <#
-Copyright 2011-2017 Roman Kuzmin
+Copyright (c) Roman Kuzmin
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use
 this file except in compliance with the License. You may obtain a copy of the
@@ -785,7 +785,7 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 	}
 
 	function Get-ParameterSet {
-		$1.Command.ParameterSets | Sort-Object { $_.Parameters.Count }, Name
+		$1.Command.ParameterSets | Sort-Object { !$_.IsDefault }, { $_.Parameters.Count }, Name
 	}
 
 	function Get-CommandParameter($Command, $Sort) {

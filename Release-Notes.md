@@ -1,5 +1,9 @@
 # Helps Release Notes
 
+## v1.2.4
+
+Sort parameter sets so that the default goes first.
+
 ## v1.2.3
 
 Keep parameter positions as specified, do not number from 0 or 1.
