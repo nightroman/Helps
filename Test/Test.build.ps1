@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Tests of Helps.
@@ -6,6 +5,8 @@
 .Notes
 	Do not use ${*}.Warnings[-1] -- it fails in PS v2.
 #>
+
+$ErrorView = 'Normal'
 
 Enter-Build {
 	. Helps
@@ -178,8 +179,9 @@ task NewMissingCommandWarningAndOutput {
 	$out = (New-Helps Missing-Command | Out-String).Trim()
 	equals ${*}.Warnings.Count ($nWarning + 1)
 	equals ${*}.Warnings[$nWarning].Message "Command 'Missing-Command' is not found."
+	Write-Build Magenta $out
 	assert ($out -like @'
-# Missing-Command command help
+### Missing-Command command help
 @{
 *
 }
@@ -191,8 +193,9 @@ task NewMissingProviderWarningAndOutput {
 	$out = (New-Helps -Provider MissingProvider | Out-String).Trim()
 	equals ${*}.Warnings.Count ($nWarning + 1)
 	equals ${*}.Warnings[$nWarning].Message "Provider 'MissingProvider' is not found."
+	Write-Build Magenta $out
 	assert ($out -like @'
-# MissingProvider provider help
+### MissingProvider provider help
 @{
 *
 }
@@ -205,7 +208,7 @@ task ConvertUnknownCommandName {
 	command = 'Missing-Command'; synopsis = '...'
 }
 '@ > z.ps1
-	Test-Error "Convert-Helps : The term 'Missing-Command' is not recognized as the name of a cmdlet,*.*At *\Test.build.ps1:*" {
+	Test-Error "Convert-Helps : The term 'Missing-Command' is not recognized as *At *\Test.build.ps1:*" {
 		Convert-Helps z.ps1 z.xml
 	}
 }

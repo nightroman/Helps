@@ -202,7 +202,7 @@ function Helps.NewCommand(
 		$data = $Tab + ($Name -replace '\W')
 
 		''
-		"# $Name command data"
+		"### $Name command data"
 		'$' + $LocalizedData + ' = @{'
 		"${data}Synopsis = ''"
 		"${data}Description = ''"
@@ -242,7 +242,7 @@ function Helps.NewCommand(
 	}
 
 	''
-	"# $Name command help"
+	"### $Name command help"
 	'@{'
 
 	"${Tab}command = '$Name'"
@@ -411,7 +411,7 @@ function Helps.NewProvider(
 	if ($LocalizedData) {
 		$data = $Tab + ($Name -replace '\W')
 		''
-		"# $Name provider data"
+		"### $Name provider data"
 		'$' + $LocalizedData + ' = @{'
 		"${data}Synopsis = ''"
 		"${data}Description = ''"
@@ -431,7 +431,7 @@ function Helps.NewProvider(
 	}
 
 	''
-	"# $Name provider help"
+	"### $Name provider help"
 	'@{'
 
 	"${Tab}provider = '$Name'"
@@ -726,8 +726,8 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 				# script
 				else {
 					$code = $code.ToString().Replace("`t", '    ')
-					if ($code -match '(\n\s+)') {
-						$code = $code -replace ($matches[1]), "`n"
+					if ($code -match '((?:\r\n|[\r\n])\s+)\S') {
+						$code = $code.Replace($matches[1], "`n")
 					}
 					$code = $code.Trim()
 				}
@@ -785,7 +785,7 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 	}
 
 	function Get-ParameterSet {
-		$1.Command.ParameterSets | Sort-Object { !$_.IsDefault }, { $_.Parameters.Count }, Name
+		$1.Command.ParameterSets | Sort-Object { !$_.IsDefault }, { - $_.Parameters.Count }, Name
 	}
 
 	function Get-CommandParameter($Command, $Sort) {

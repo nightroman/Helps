@@ -1,5 +1,11 @@
 # Helps Release Notes
 
+## v1.2.5
+
+- Amend parameter set sorting by parameter count.
+- Amend formatting of example script blocks.
+- Use `###` comments in generated help scripts.
+
 ## v1.2.4
 
 Sort parameter sets so that the default goes first.

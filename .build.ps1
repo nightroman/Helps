@@ -1,7 +1,6 @@
-
 <#
 .Synopsis
-	Build script (https://github.com/nightroman/Invoke-Build)
+	Build script, https://github.com/nightroman/Invoke-Build
 #>
 
 param(
@@ -16,25 +15,25 @@ $ScriptRoot = Split-Path $ScriptFile
 
 # Synopsis: Convert markdown files to HTML
 # <http://johnmacfarlane.net/pandoc/>
-task Markdown {
+task markdown {
 	function Convert-Markdown($Name) {pandoc.exe --standalone --from=gfm "--output=$Name.htm" "--metadata=pagetitle=$Name" "$Name.md"}
 	exec { Convert-Markdown README }
 	exec { Convert-Markdown Release-Notes }
 }
 
 # Synopsis: Remove temp files
-task Clean {
+task clean {
 	remove z, z.ps1, en-US, ru-RU, Helps.*.nupkg, README.htm, Release-Notes.htm
 }
 
 # Synopsis: Set $script:Version
-task Version {
+task version {
 	($script:Version = .{ switch -Regex -File Release-Notes.md {'##\s+v(\d+\.\d+\.\d+)' {return $Matches[1]}} })
 	assert $Version
 }
 
 # Synopsis: Copy Helps.ps1 from its working location to the project
-task UpdateScript {
+task updateScript {
 	$target = Get-Item Helps.ps1 -ErrorAction 0
 	$source = Get-Item $ScriptFile
 	assert (!$target -or ($target.LastWriteTime -le $source.LastWriteTime))
@@ -42,7 +41,7 @@ task UpdateScript {
 }
 
 # Synopsis: Calls Test\Test-Helps.ps1
-task Test UpdateScript, HelpEn, HelpRu, {
+task test updateScript, helpEn, helpRu, {
 	$ErrorView = 'NormalView'
 	Set-Location Test
 
@@ -53,20 +52,15 @@ task Test UpdateScript, HelpEn, HelpRu, {
 	equals $result.Errors.Count 0
 	equals $result.Warnings.Count 2
 },
-Clean
-
-# Synopsis: Tests in PS v2
-task Test2 {
-	exec {PowerShell.exe -Version 2 -NoProfile Invoke-Build.ps1 Test}
-}
+clean
 
 # Synopsis: Tests in PS v6
-task Test6 -If $env:powershell6 {
-	exec {& $env:powershell6 -NoProfile -Command Invoke-Build.ps1 Test}
+task test6 -If $env:powershell6 {
+	exec {& $env:powershell6 -NoProfile -Command Invoke-Build.ps1 test}
 }
 
 # Synopsis: Build and test en-US help
-task HelpEn {
+task helpEn {
 	$null = mkdir en-US -Force
 
 	. Helps.ps1
@@ -79,7 +73,7 @@ task HelpEn {
 }
 
 # Synopsis: Build and test ru-RU help
-task HelpRu {
+task helpRu {
 	$null = mkdir ru-RU -Force
 
 	. Helps.ps1
@@ -90,7 +84,7 @@ task HelpRu {
 }
 
 # Synopsis: View help using the $Culture
-task View {
+task view {
 	$file = "$env:TEMP\help.txt"
 	[System.Threading.Thread]::CurrentThread.CurrentUICulture = $Culture
 	. Helps.ps1
@@ -108,7 +102,7 @@ task View {
 }
 
 # Synopsis: Make the package in z\tools for NuGet
-task Package Markdown, HelpEn, HelpRu, UpdateScript, {
+task package markdown, helpEn, helpRu, updateScript, {
 	# package directories
 	remove z
 	$null = mkdir z\tools\en-US, z\tools\ru-RU
@@ -118,13 +112,13 @@ task Package Markdown, HelpEn, HelpRu, UpdateScript, {
 	Copy-Item ru-RU\Helps-Help.xml z\tools\ru-RU
 	Copy-Item -Destination z\tools `
 	Helps.ps1,
-	LICENSE.txt,
+	LICENSE,
 	README.htm,
 	Release-Notes.htm
 }
 
 # Synopsis: Make the NuGet package
-task NuGet Package, Version, {
+task nuget package, version, {
 	$text = @'
 Helps.ps1 provides functions for building PowerShell XML help files from help
 scripts and for creating help script templates for existing objects. Help can
@@ -155,7 +149,7 @@ and functions in scripts or modules.
 }
 
 # Synopsis: Push with a version tag.
-task PushRelease Version, {
+task pushRelease version, {
 	$changes = exec { git status --short }
 	assert (!$changes) "Please, commit changes."
 
@@ -165,10 +159,11 @@ task PushRelease Version, {
 }
 
 # Synopsis: Push NuGet package.
-task PushNuGet NuGet, {
-	exec { NuGet.exe push "Helps.$Version.nupkg" -Source nuget.org }
+task pushNuGet nuget, {
+	$ApiKey = Read-Host nuget.org-ApiKey
+	exec { NuGet.exe push "Helps.$Version.nupkg" -Source nuget.org -ApiKey $ApiKey }
 },
-Clean
+clean
 
 # Synopsis: Build help files, run tests.
-task . Test2, Test6, Test
+task . test6, test
