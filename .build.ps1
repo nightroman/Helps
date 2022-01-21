@@ -54,9 +54,9 @@ task test updateScript, helpEn, helpRu, {
 },
 clean
 
-# Synopsis: Tests in PS v6
-task test6 -If $env:powershell6 {
-	exec {& $env:powershell6 -NoProfile -Command Invoke-Build.ps1 test}
+# Synopsis: Tests in PS Core
+task test7 {
+	exec {pwsh -NoProfile -Command Invoke-Build.ps1 test}
 }
 
 # Synopsis: Build and test en-US help
@@ -166,4 +166,4 @@ task pushNuGet nuget, {
 clean
 
 # Synopsis: Build help files, run tests.
-task . test6, test
+task . test7, test
