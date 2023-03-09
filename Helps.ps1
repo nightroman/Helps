@@ -152,6 +152,7 @@ function Helps.IsParameter($Name) {
 		'PipelineVariable'
 		'InformationAction'
 		'InformationVariable'
+		'ProgressAction'
 	) -notcontains $Name
 }
 
