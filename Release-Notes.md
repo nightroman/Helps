@@ -1,5 +1,9 @@
 # Helps Release Notes
 
+## v1.2.7
+
+master -> main
+
 ## v1.2.6
 
 Add `ProgressAction` to common parameters (PS 7.4)

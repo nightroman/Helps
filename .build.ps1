@@ -108,23 +108,26 @@ task package markdown, helpEn, helpRu, updateScript, {
 	$null = mkdir z\tools\en-US, z\tools\ru-RU
 
 	# copy files
+	Copy-Item README.md z
 	Copy-Item en-US\Helps-Help.xml z\tools\en-US
 	Copy-Item ru-RU\Helps-Help.xml z\tools\ru-RU
-	Copy-Item -Destination z\tools `
-	Helps.ps1,
-	LICENSE,
-	README.htm,
-	Release-Notes.htm
+	Copy-Item -Destination z\tools @(
+		'Helps.ps1'
+		'LICENSE'
+		'README.htm'
+		'Release-Notes.htm'
+	)
 }
 
 # Synopsis: Make the NuGet package
 task nuget package, version, {
-	$text = @'
+	$description = @'
 Helps.ps1 provides functions for building PowerShell XML help files from help
 scripts and for creating help script templates for existing objects. Help can
 be created for everything that supports XML help: cmdlets, providers, scripts,
 and functions in scripts or modules.
 '@
+
 	Set-Content z\Package.nuspec @"
 <?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
@@ -133,14 +136,13 @@ and functions in scripts or modules.
 		<version>$Version</version>
 		<authors>Roman Kuzmin</authors>
 		<owners>Roman Kuzmin</owners>
-		<projectUrl>https://github.com/nightroman/Helps</projectUrl>
+	    <developmentDependency>true</developmentDependency>
 		<license type="expression">Apache-2.0</license>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>$text</summary>
-		<description>$text</description>
+		<readme>README.md</readme>
+		<projectUrl>https://github.com/nightroman/Helps</projectUrl>
+		<description>$description</description>
+		<releaseNotes>https://github.com/nightroman/Helps/blob/main/Release-Notes.md</releaseNotes>
 		<tags>powershell help builder</tags>
-		<releaseNotes>https://github.com/nightroman/Helps/blob/master/Release-Notes.md</releaseNotes>
-		<developmentDependency>true</developmentDependency>
 	</metadata>
 </package>
 "@
