@@ -1,4 +1,3 @@
-
 <#
 .Synopsis
 	Help script for Helps.sp1 and its functions.
@@ -23,23 +22,20 @@
 	Convert-Helps Helps-Help.ps1 Helps-Help.xml @{ UICulture = 'ru-RU' }
 #>
 
-param
-(
+param(
 	$UICulture = 'en-US'
 )
 
-Set-StrictMode -Version Latest
+Set-StrictMode -Version 3
 Import-LocalizedData -BindingVariable data -UICulture $UICulture
 
-### Base help to be inherited by all commands
-
+### Base help inherited by all commands
 $AnyHelp = @{
 	inputs = @()
 	links = @()
 }
 
-### Base help to be inherited by Convert-Helps and Test-Helps
-
+### Base help inherited by Convert-Helps and Test-Helps
 $BaseHelp = Merge-Helps $AnyHelp @{
 	parameters = @{
 		Script = $data.ScriptParameter
@@ -48,7 +44,7 @@ $BaseHelp = Merge-Helps $AnyHelp @{
 	outputs = @()
 }
 
-### Helps.ps1 command help
+### Helps.ps1
 @{
 	command = 'Helps.ps1'
 	synopsis = $data.Helpsps1Synopsis
@@ -66,8 +62,7 @@ $BaseHelp = Merge-Helps $AnyHelp @{
 	)
 }
 
-### Convert-Helps command (inherits base help)
-
+### Convert-Helps
 Merge-Helps $BaseHelp @{
 	command = 'Convert-Helps'
 	synopsis = $data.ConvertHelpsSynopsis
@@ -96,8 +91,7 @@ Merge-Helps $BaseHelp @{
 	)
 }
 
-### Merge-Helps command help
-
+### Merge-Helps
 Merge-Helps $AnyHelp @{
 	command = 'Merge-Helps'
 	synopsis = $data.MergeHelpsSynopsis
@@ -117,8 +111,7 @@ Merge-Helps $AnyHelp @{
 	)
 }
 
-### New-Helps command help
-
+### New-Helps
 Merge-Helps $AnyHelp @{
 	command = 'New-Helps'
 	synopsis = $data.NewHelpsSynopsis
@@ -161,8 +154,7 @@ Merge-Helps $AnyHelp @{
 	)
 }
 
-### Test-Helps command (inherits base help)
-
+### Test-Helps
 Merge-Helps $BaseHelp @{
 	command = 'Test-Helps'
 	synopsis = $data.TestHelpsSynopsis

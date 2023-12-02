@@ -1,5 +1,9 @@
 # Helps Release Notes
 
+## v1.2.8
+
+Tweak generated help comments
+
 ## v1.2.7
 
 master -> main

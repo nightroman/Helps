@@ -1,8 +1,7 @@
-
 # PowerShell Help Builder
 
 Helps.ps1 provides functions for building PowerShell XML help files from help
-scripts and for creating help script templates for existing objects. Help can
+scripts and for creating help script templates for existing objects. Help may
 be created for everything that supports XML help: cmdlets, providers, scripts,
 and functions in scripts or modules.
 
@@ -15,11 +14,11 @@ XML. Scripts make a lot of things easy. One of them is building localized help.
 Helps is distributed as the NuGet package [Helps](https://www.nuget.org/packages/Helps).
 Download it by NuGet tools or [directly](http://nuget.org/api/v2/package/Helps).
 In the latter case save it as *".zip"* and unzip. Use the package subdirectory
-*"tools"*. Consider to add this directory to the path.
+*"tools"*. Consider adding this directory to the path.
 
 **Step 2:**
 Choose the command, for example *My-Command* cmdlet from *MyModule*, and make
-the command available, that is import the module. If *My-Command* is a script
+the command available, i.e. import the module. If *My-Command* is a script
 function then dot-source the script.
 
     Import-Module MyModule
@@ -32,9 +31,11 @@ line:
     . Helps.ps1
 
 **Step 4:**
-Create and save the template help script of *My-Command*, open the script in an
-editor and modify it (e.g. the synopsis must not be empty).
+Create and copy/save the template help script of *My-Command*, paste/open the
+script in an editor and fill the empty placeholders it with proper content.
 
+    New-Helps -Command My-Command
+    New-Helps -Command My-Command | Set-Clipboard
     New-Helps -Command My-Command > MyModule.dll-Help.ps1
 
 **Step 5:**

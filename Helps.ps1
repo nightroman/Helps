@@ -203,7 +203,7 @@ function Helps.NewCommand(
 		$data = $Tab + ($Name -replace '\W')
 
 		''
-		"### $Name command data"
+		"### $Name"
 		'$' + $LocalizedData + ' = @{'
 		"${data}Synopsis = ''"
 		"${data}Description = ''"
@@ -243,7 +243,7 @@ function Helps.NewCommand(
 	}
 
 	''
-	"### $Name command help"
+	"### $Name"
 	'@{'
 
 	"${Tab}command = '$Name'"
@@ -412,7 +412,7 @@ function Helps.NewProvider(
 	if ($LocalizedData) {
 		$data = $Tab + ($Name -replace '\W')
 		''
-		"### $Name provider data"
+		"### $Name"
 		'$' + $LocalizedData + ' = @{'
 		"${data}Synopsis = ''"
 		"${data}Description = ''"
@@ -432,7 +432,7 @@ function Helps.NewProvider(
 	}
 
 	''
-	"### $Name provider help"
+	"### $Name"
 	'@{'
 
 	"${Tab}provider = '$Name'"

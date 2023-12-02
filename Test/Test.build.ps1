@@ -181,7 +181,7 @@ task NewMissingCommandWarningAndOutput {
 	equals ${*}.Warnings[$nWarning].Message "Command 'Missing-Command' is not found."
 	Write-Build Magenta $out
 	assert ($out -like @'
-### Missing-Command command help
+### Missing-Command
 @{
 *
 }
@@ -195,7 +195,7 @@ task NewMissingProviderWarningAndOutput {
 	equals ${*}.Warnings[$nWarning].Message "Provider 'MissingProvider' is not found."
 	Write-Build Magenta $out
 	assert ($out -like @'
-### MissingProvider provider help
+### MissingProvider
 @{
 *
 }
