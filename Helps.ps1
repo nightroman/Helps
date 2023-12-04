@@ -138,6 +138,17 @@ function New-Helps(
 function Helps.Error($M, $C=0)
 {$PSCmdlet.ThrowTerminatingError((New-Object System.Management.Automation.ErrorRecord ([Exception]"$M"), $null, $C, $null))}
 
+# Better generic type names
+function Helps.FormatType([Type]$Type) {
+	$name = $Type.Name
+	if (!$Type.IsGenericType) {
+		return $name
+	}
+	$name = $name.Remove($name.IndexOf('`'))
+	$arg = foreach($_ in $Type.GetGenericArguments()) {$_.Name}
+	"$name[$($arg -join ', ')]"
+}
+
 # Filters out common parameters
 function Helps.IsParameter($Name) {
 	@(
@@ -992,7 +1003,7 @@ function Helps.ConvertCommand($Help) {
 			"<maml:name>$($_.Name)</maml:name>"
 			if ($_.ParameterType -ne [System.Management.Automation.SwitchParameter]) {
 				@"
-<command:parameterValue required="true">$($_.ParameterType.Name)</command:parameterValue>
+<command:parameterValue required="true">$(Helps.FormatType $_.ParameterType)</command:parameterValue>
 "@
 			}
 			'</command:parameter>'

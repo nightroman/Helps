@@ -1,10 +1,9 @@
-
 <#
 .Synopsis
 	Builds exhaustive help from Test-Helps-Help.ps1, TestProvider.dll-Help.ps1
 
 .Description
-	This script should be invoked from its home directory.
+	This script should be invoked from its location.
 
 .Outputs
 	* $HOME\data\Helps-Test.V.txt - sample files for v2 and v3.
@@ -12,8 +11,8 @@
 	* TestProvider.dll is created for the dummy TestProvider being tested.
 #>
 
-Set-StrictMode -Version Latest
-$ErrorActionPreference = 'Stop'
+Set-StrictMode -Version 3
+$ErrorActionPreference = 1
 
 if (!(Test-Path Test-Helps.ps1)) { throw 'Run me from my location.' }
 $log = "$HOME\data\Helps-Test.new.txt"
@@ -23,14 +22,13 @@ $sample = "$HOME\data\Helps-Test.$($PSVersionTable.PSVersion.Major).txt"
 . Helps.ps1
 
 #.ExternalHelp Test-Helps-Help.xml
-function global:Test-Function1
-(
+function global:Test-Function1(
 	[Parameter(Mandatory = $true, ParameterSetName = 'Set1')]
 	[string]$Param1,
 	[Parameter(Mandatory = $true, ParameterSetName = 'Set2')]
 	[string]$Param2,
-	[string]$Param3,
-	[string]$Param4
+	[Nullable[int]]$Param3,
+	[Tuple[string, object]]$Param4
 )
 {}
 
@@ -39,8 +37,7 @@ function global:Test-Function2
 {}
 
 #.ExternalHelp Test-Helps-Help.xml
-function Test-FunctionDynamicParam
-(
+function Test-FunctionDynamicParam(
 	[Parameter()]
 	[string]$Param1
 )
