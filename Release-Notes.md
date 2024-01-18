@@ -1,5 +1,9 @@
 # Helps Release Notes
 
+## v1.2.10
+
+Minor internal tweaks
+
 ## v1.2.9
 
 Improve generic type names, e.g. `Nullable[Double]` instead of `Nullable'1`
