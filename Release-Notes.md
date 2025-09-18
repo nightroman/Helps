@@ -159,8 +159,6 @@ Command parameters: yet missing pipeline input information is now generated.
 
 ## v1.0.2
 
-Added *README.htm* and *Release Notes.htm*.
-
 `Test-Helps` uses private local variables.
 
 ## v1.0.1

@@ -634,7 +634,7 @@ function Helps.ConvertAll([hashtable[]]$Topics, [string]$Output) {
 	function Format-Line([string]$Line) {
 		$Line = $Line.Replace("`t", '    ')
 		if ($Line -match $tabs) {
-			($Line.Replace("`n" + $matches[1], "`n")).Trim()
+			$Line.Replace("`n" + $matches[1], "`n").Trim()
 		}
 		else {
 			($split.Split($Line) | .{process{ $replace.Replace($_, ' ') }}) -join "`r`n`r`n"
